@@ -11,7 +11,8 @@ import wrds
 
 from settings import config
 
-DATA_DIR = Path(config("DATA_DIR"))
+DATA_DIR = Path(config("DATA_DIR", default="_data"))
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 WRDS_USERNAME = config("WRDS_USERNAME")
 START_DATE = config("START_DATE", default="1996-01-01")
 END_DATE = config("END_DATE", default="2025-12-31")
