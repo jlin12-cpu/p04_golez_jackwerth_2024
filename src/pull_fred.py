@@ -1,10 +1,12 @@
 """
-Pull Treasury rates from FRED for dividend strip analysis.
+Pull Treasury rates and Fama-French factors.
 
-For Golez & Jackwerth (2024):
-- 1-month T-bill rate (risk-free rate) 
+Outputs two files:
+1. fred_treasury_rates.parquet - Treasury rates 
+-1-month T-bill rate (risk-free rate) 
 - 2-year Treasury rate
 - 10-year Treasury rate
+2. fama_french_factors.parquet - All Fama-French factors including market factor
 """
 
 from pathlib import Path
@@ -18,74 +20,133 @@ START_DATE = config("START_DATE", default="1996-01-01")
 END_DATE = config("END_DATE", default="2025-12-31")
 
 
-def pull_treasury_rates(start_date=START_DATE, end_date=END_DATE):
+def pull_fama_french_full(start_date=START_DATE, end_date=END_DATE):
     """
-    Pull Treasury rates from FRED.
-    
-    Series codes:
-    - DGS1MO: 1-Month Treasury Constant Maturity Rate
-    - DGS2: 2-Year Treasury Constant Maturity Rate  
-    - DGS10: 10-Year Treasury Constant Maturity Rate
+    Pull complete Fama-French factors including market factor.
     
     Returns:
     --------
-    DataFrame with daily Treasury rates (as decimals, not percentages)
+    DataFrame with columns: date, mkt_rf, smb, hml, rf_1m
     """
     
-    series_codes = ['DGS1MO', 'DGS2', 'DGS10']
+    print(f"Pulling Fama-French factors (including market factor)...")
     
-    print(f"Pulling Treasury rates from FRED...")
-    print(f"  Period: {start_date} to {end_date}")
+    # Pull Fama-French 3 factors
+    ff_data = web.DataReader('F-F_Research_Data_Factors_daily', 
+                             'famafrench', 
+                             start_date, 
+                             end_date)
     
-    # Pull data
+    # Get daily data
+    df = ff_data[0]
+    
+    # Convert from percentage to decimal
+    df = df / 100
+    
+    # Reset index
+    df = df.reset_index().rename(columns={'Date': 'date'})
+    
+    # Rename columns
+    df = df.rename(columns={
+        'Mkt-RF': 'mkt_rf',
+        'SMB': 'smb',
+        'HML': 'hml',
+        'RF': 'rf_1m'
+    })
+    
+    print(f"Got {len(df)} days of Fama-French data")
+    
+    return df
+
+
+def pull_fred_rates(start_date=START_DATE, end_date=END_DATE):
+    """
+    Pull 2-year and 10-year Treasury rates from FRED.
+    """
+    
+    print(f"Pulling 2-year and 10-year Treasury rates from FRED...")
+    
+    series_codes = ['DGS2', 'DGS10']
+    
     df = web.DataReader(series_codes, 'fred', start_date, end_date)
     
-    # Rename columns to be more descriptive
     df = df.rename(columns={
-        'DGS1MO': 'rf_1m',
         'DGS2': 'treasury_2y', 
         'DGS10': 'treasury_10y'
     })
     
-    # Convert from percentage to decimal (FRED gives percentages)
     df = df / 100
-    
-    # Reset index to make date a column
     df = df.reset_index().rename(columns={'DATE': 'date'})
     
-    print(f"Pulled {len(df)} days of data")
-    print(f"Missing values:")
-    print(f"rf_1m: {df['rf_1m'].isna().sum()}")
-    print(f"treasury_2y: {df['treasury_2y'].isna().sum()}")
-    print(f"treasury_10y: {df['treasury_10y'].isna().sum()}")
+    print(f"Got {len(df)} days of FRED data")
     
     return df
 
 
-def load_treasury_rates(data_dir=DATA_DIR):
+def pull_all_data(start_date=START_DATE, end_date=END_DATE):
     """
-    Load previously saved Treasury rates.
+    Pull all data and create two output files.
     """
-    file_path = Path(data_dir) / "fred_treasury_rates.parquet"
-    df = pd.read_parquet(file_path)
-    return df
+    
+    print(f"=" * 70)
+    print(f"PULLING TREASURY RATES AND FAMA-FRENCH FACTORS")
+    print(f"=" * 70)
+    print(f"Period: {start_date} to {end_date}\n")
+    
+    # Pull from both sources
+    df_ff = pull_fama_french_full(start_date, end_date)
+    df_fred = pull_fred_rates(start_date, end_date)
+    
+    # Create treasury rates file
+    print(f"\nCreating treasury rates file")
+    df_treasury = pd.merge(
+        df_ff[['date', 'rf_1m']], 
+        df_fred, 
+        on='date', 
+        how='outer'
+    )
+    df_treasury = df_treasury.sort_values('date').reset_index(drop=True)
+    df_treasury = df_treasury[['date', 'rf_1m', 'treasury_2y', 'treasury_10y']]
+    
+    print(f"Treasury rates: {df_treasury.shape}")
+    print(f"Missing values:")
+    print(f"rf_1m:        {df_treasury['rf_1m'].isna().sum()}")
+    print(f"treasury_2y:  {df_treasury['treasury_2y'].isna().sum()}")
+    print(f"treasury_10y: {df_treasury['treasury_10y'].isna().sum()}")
+    
+    # Fama-French factors file 
+    print(f"\nFama-French factors: {df_ff.shape}")
+    print(f"  Columns: {df_ff.columns.tolist()}")
+    
+    return df_treasury, df_ff
 
 
 if __name__ == "__main__":
-    # Pull data
-    df = pull_treasury_rates()
+    # Pull all data
+    df_treasury, df_ff = pull_all_data()
     
-    # Save
+    # Create output directory
     filedir = Path(DATA_DIR)
     filedir.mkdir(parents=True, exist_ok=True)
     
-    output_path = filedir / "fred_treasury_rates.parquet"
-    df.to_parquet(output_path)
+    # Save treasury rates
+    treasury_path = filedir / "fred_treasury_rates.parquet"
+    df_treasury.to_parquet(treasury_path)
     
-    print(f"\n Saved to {output_path}")
-    print(f"  Date range: {df['date'].min()} to {df['date'].max()}")
-    print(f"  Shape: {df.shape}")
-    print(f"\nFirst few rows:")
-    print(df.head())
-    print(f"\nLast few rows:")
-    print(df.tail())
+    # Save Fama-French factors
+    ff_path = filedir / "fama_french_factors.parquet"
+    df_ff.to_parquet(ff_path)
+    
+    print(f"\n{'=' * 70}")
+    print(f"Saved two files:")
+    print(f"1. {treasury_path}")
+    print(f"Shape: {df_treasury.shape}")
+    print(f"2. {ff_path}")
+    print(f"Shape: {df_ff.shape} (includes market factor)")
+    print(f"{'=' * 70}")
+    
+    print(f"\nTreasury rates preview:")
+    print(df_treasury.head())
+    
+    print(f"\nFama-French factors preview:")
+    print(df_ff.head())
