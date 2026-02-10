@@ -1,0 +1,13 @@
+Name,Metadata Complete,Object Type,Identifier,Pipeline,Missing Fields,Page Link
+Holding Period Effects in Dividend Strip Returns,False,pipeline,P04,P04,"build_commands, os_compatibility, git_repo_URL",../index.html
+crsp_sp500,False,dataframe,crsp_sp500,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/crsp_sp500.html
+fred_treasury_rates,False,dataframe,fred_treasury_rates,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/fred_treasury_rates.html
+crsp_treasury_returns,False,dataframe,crsp_treasury_returns,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/crsp_treasury_returns.html
+optionmetrics_spx,False,dataframe,optionmetrics_spx,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/optionmetrics_spx.html
+fama_french_factors,False,dataframe,fama_french_factors,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/fama_french_factors.html
+S&P 500 Cumulative Returns,False,chart,sp500_cumulative,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.sp500_cumulative.html
+S&P 500 Rolling Volatility,False,chart,sp500_volatility,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.sp500_volatility.html
+Treasury Rates Over Time,False,chart,treasury_rates,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.treasury_rates.html
+Monthly Treasury Bond Returns,False,chart,treasury_returns,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.treasury_returns.html
+Number of SPX Options Available (Month-End),False,chart,options_count,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.options_count.html
+Distribution of SPX Option Prices,False,chart,options_prices,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.options_prices.html
