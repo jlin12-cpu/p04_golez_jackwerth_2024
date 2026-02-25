@@ -6,8 +6,9 @@ from decouple import config
 # =========================
 # Config / Paths
 # =========================
-DATA_DIR = Path(config("DATA_DIR", default="_data"))
-DATA_DIR.mkdir(parents=True, exist_ok=True)
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = BASE_DIR / "_data"
+DATA_DIR.mkdir(exist_ok=True)
 
 WRDS_USERNAME = config("WRDS_USERNAME")
 START_DATE = pd.to_datetime(config("START_DATE", default="1996-01-01"))
@@ -98,20 +99,30 @@ def pull_spx_full(start_date=START_DATE, end_date=END_DATE):
 # =========================
 # Pull zero-coupon zero curve
 # =========================
-def pull_zero_coupon(start_date=START_DATE, end_date=END_DATE):
-    db = wrds.Connection(wrds_username=WRDS_USERNAME)
-    query = f"""
-        SELECT date, maturity, rate
-        FROM optionm.zero_coupon
-        WHERE date >= '{start_date.strftime('%Y-%m-%d')}' 
-          AND date <= '{end_date.strftime('%Y-%m-%d')}'
-        ORDER BY date, maturity
-    """
-    df_zero = db.raw_sql(query, date_cols=["date"])
-    db.close()
-    df_zero.to_parquet(ZERO_COUPON_FILE)
-    print(f"Saved zero-coupon rates to {ZERO_COUPON_FILE}")
+def pull_zero_coupon():
+    import wrds
+    
+    print("Pulling OptionMetrics zero curve...")
+
+    with wrds.Connection(wrds_username=WRDS_USERNAME) as db:
+
+        query = """
+            SELECT date, days, rate
+            FROM optionm.zerocd
+            WHERE date >= '1996-01-01'
+              AND date <= '2024-12-31'
+            ORDER BY date, days
+        """
+
+        df_zero = db.raw_sql(query, date_cols=["date"])
+
+    print(f"Got {len(df_zero):,} zero curve rows")
+
+    df_zero.to_parquet(DATA_DIR / "optionmetrics_zero_curve.parquet", index=False)
+    print("Saved zero curve to _data/optionmetrics_zero_curve.parquet")
+
     return df_zero
+
 
 # =========================
 # Filter to month-end
