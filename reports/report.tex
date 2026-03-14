@@ -22,19 +22,29 @@ Jie Lin and Zimeng Yi\footnote{University of Chicago}
 
 \doublespacing
 \begin{abstract}
-We replicate Figure 1 from \cite{golez2024holding}, which plots
-12-month maturity interest rates from three sources:
+We replicate Figure 1 and Table 1 from \cite{golez2024holding}.
+Figure 1 plots 12-month maturity interest rates from three sources:
 option-implied rates derived from S\&P 500 index options,
 zero curve rates from OptionMetrics, and constant maturity Treasury rates from FRED.
-Following the methodology in the paper, we estimate option-implied interest rates
-using the outer product approach for 1996--2003 and the regression approach for 2004--2022.
-Our replication closely matches the paper's findings:
-the average difference between the option-implied rate and the zero curve rate is
-8.15 basis points in our sample, compared with 7 basis points reported in the paper.
-We then extend the sample through 2024 and find that the option-implied rate
+Table 1 reports annualized summary statistics for monthly dividend strip returns
+and market returns over the period 1996--2022.
+Following the paper's core methodology, we estimate option-implied interest rates
+using the outer product approach for 1996--2003 and the regression approach for 2004--2022,
+and we construct strip prices from put-call parity using these implied rates.
+Our replication of Figure 1 closely matches the paper's findings,
+with an average implied-minus-zero spread of 8.15 basis points
+versus 7 basis points reported in the paper.
+For Table 1, our replicated market return statistics are close to the paper,
+while strip return statistics show somewhat larger deviations,
+likely due to differences between our automated CRSP-based dividend construction
+and the paper's Datastream-based implementation.
+We extend both sets of results through 2024 and find that the option-implied rate
 falls below the zero curve rate on average in the post-2022 period.
-This suggests that the relationship documented in the original sample may have weakened
-or reversed in recent years.
+For the extended version of Table 1, market return moments remain broadly stable,
+whereas strip return moments become much more extreme in 2023--2024.
+We interpret the latter pattern as likely reflecting increased sensitivity
+of strip-price construction to end-of-day option quotes during a period
+of unusually large interest rate movements.
 \end{abstract}
 
 \end{titlepage}
@@ -55,15 +65,25 @@ Figure 1 of the paper plots three 12-month maturity interest rate series:
 the option-implied rate, the zero curve rate from OptionMetrics,
 and the constant maturity Treasury rate from FRED.
 The paper reports that the option-implied rate is on average 7 basis points
-higher than the zero curve rate over the full sample,
-with the relative difference increasing from 0.64\% in the first half of the sample
-to 11.80\% in the second half.
+higher than the zero curve rate over the full sample.
 
-In this replication, we reproduce Figure 1 using WRDS-accessed OptionMetrics
-and CRSP data together with Treasury rate data from FRED,
-and then extend the sample through 2024
-to examine whether the relationship between the two rates
-has changed in recent years.
+Table 1 of the paper reports annualized summary statistics for monthly
+dividend strip returns and market returns, including raw returns,
+returns in excess of the risk-free rate, and returns in excess of
+duration-matched Treasury bond returns.
+The paper's main finding is that short-term dividend strips deliver
+Sharpe ratios comparable to or higher than those of the market,
+despite much higher short-horizon return volatility.
+The strong negative autocorrelation of strip returns is interpreted
+as evidence of measurement error in strip prices estimated from options data.
+
+In this replication, we reproduce both Figure 1 and Table 1
+using WRDS-accessed OptionMetrics and CRSP data together with
+Treasury rate data from FRED and Kenneth French's data library.
+Because this course project emphasizes an end-to-end reproducible analytical pipeline,
+our implementation follows the paper's core methodology closely
+while adapting certain data inputs to fit a fully automated WRDS-based workflow.
+We then extend both sets of results through 2024.
 
 \section{Data}
 
@@ -88,52 +108,67 @@ to obtain a 1-year constant-maturity zero curve rate.
 \textbf{Treasury rates.}
 We obtain the 1-year constant maturity Treasury rate from FRED
 (series DGS1) and convert it to continuously compounded form.
+For excess return calculations in Table 1,
+we obtain monthly returns on 2-year and 10-year fixed maturity Treasuries from CRSP.
+
+\textbf{Market return proxy and dividend proxy.}
+We obtain daily S\&P 500 index data from CRSP.
+To construct our automated monthly market panel,
+we aggregate daily returns to the monthly frequency and use a cleaned
+CRSP-based monthly market return series as our market return proxy.
+We also construct a monthly dividend proxy from CRSP-based return data.
+This dividend series is used in the strip return calculation and serves
+as an automated proxy for the realized monthly dividend required by the paper's methodology.
+
+\textbf{Risk-free rate.}
+We obtain the monthly 1-month T-bill rate from Kenneth French's data library.
 
 \section{Data Summary}
 
-Table \ref{table:summary_stats} reports descriptive statistics 
-for the three interest rate series across the full sample 
-and two sub-periods. The option-implied rate is on average 
-slightly higher than the zero curve rate in both sub-periods, 
-with a somewhat larger average difference in the second half 
+Table \ref{table:summary_stats} reports descriptive statistics
+for the three interest rate series across the full sample
+and two sub-periods. The option-implied rate is on average
+slightly higher than the zero curve rate in both sub-periods,
+with a somewhat larger average difference in the second half
 of the sample.
 
-Figure \ref{fig:spread} plots the monthly spread between 
-the option-implied rate and the zero curve rate. 
-The spread is more volatile in the early sample period 
+Figure \ref{fig:spread} plots the monthly spread between
+the option-implied rate and the zero curve rate.
+The spread is more volatile in the early sample period
 and becomes more stable after 2010.
 
 \begin{table}[h]
-\centering
-\caption{Descriptive Statistics for 12-Month Interest Rate Series}
-\input{\PathToOutput/figure1_summary_stats/figure1_summary_stats_table.tex}
-\caption*{
-This table reports descriptive statistics for the three 
-12-month interest rate series used in Figure 1. 
-Statistics are reported for the full sample (1996--2022) 
-and for two sub-periods. All rates are expressed in percent.
-}
-\label{table:summary_stats}
-\end{table}
+    \centering
+    \caption{Descriptive Statistics for 12-Month Interest Rate Series}
+    \input{\PathToOutput/figure1_summary_stats/figure1_summary_stats_table.tex}
+    \caption*{
+    This table reports descriptive statistics for the three
+    12-month interest rate series used in Figure 1.
+    Statistics are reported for the full sample (1996--2022)
+    and for two sub-periods. All rates are expressed in percent.
+    }
+    \label{table:summary_stats}
+    \end{table}
 
 \begin{figure}[h]
 \centering
 \caption{Implied-Minus-Zero Spread (1996--2022)}
-\includegraphics[width=0.95\linewidth]
-{\PathToOutput/figure1_summary_stats/figure1_implied_zero_spread.png}
+\includegraphics[width=0.95\linewidth]{\PathToOutput/figure1_summary_stats/figure1_implied_zero_spread.png}
 \caption*{
-This figure plots the monthly spread between the option-implied 
-rate and the zero curve rate in basis points. 
+This figure plots the monthly spread between the option-implied
+rate and the zero curve rate in basis points.
 The red dashed line shows the full-sample mean spread.
-The gray dashed vertical line marks the beginning of the 
-second half of the sample (January 2010). 
-The spread is more volatile in the early sample period 
+The gray dashed vertical line marks the beginning of the
+second half of the sample (January 2010).
+The spread is more volatile in the early sample period
 and is more often positive in the second half of the sample.
 }
 \label{fig:spread}
 \end{figure}
 
 \section{Methodology}
+
+\subsection{Option-Implied Interest Rates}
 
 Following Section 2.1 of the paper, we estimate option-implied interest rates
 using two methods.
@@ -163,6 +198,33 @@ r_f = -\frac{1}{\tau}\ln \hat{\beta}.
 
 For both the option-implied rate and the zero curve rate,
 we linearly interpolate across maturities to obtain a 1-year constant-maturity series.
+
+\subsection{Dividend Strip Prices and Returns}
+
+Following Section 2 of the paper, we estimate the price of a dividend strip
+from put-call parity:
+\begin{equation}
+P_t^{\tau} = S_t + p_t^{\tau}(X) - c_t^{\tau}(X) - X e^{-r_f \tau},
+\end{equation}
+where $r_f$ is the option-implied interest rate estimated above.
+For each put-call pair at the same strike, we obtain one estimate of $P_t^{\tau}$,
+and we take the median across all pairs as the strip price for that date and maturity.
+
+We follow the paper's rolling strategy, fixing the strip maturity at approximately
+2 years using options expiring in June or December.
+Specifically, for months January through June we use the December expiration
+approximately 1.9 years away, and for months July through December we use
+the June expiration approximately 1.9 years away.
+Each contract is held for approximately 6 months before rolling over.
+
+Monthly strip log returns are computed as
+\begin{equation}
+r_t^{\text{Strip}} = \ln\left(\frac{P_t + D_t}{P_{t-1}}\right),
+\end{equation}
+where $P_t$ is the price of the held contract at month end and $D_t$ is a monthly
+dividend proxy constructed from CRSP data.
+Monthly market log returns are computed from our cleaned CRSP-based monthly market series,
+which serves as an automated proxy for the market return used in the paper.
 
 \section{Results}
 
@@ -207,7 +269,33 @@ Relative differences are computed relative to the average zero curve rate.
 \label{table:figure1_summary}
 \end{table}
 
+\subsection{Table 1 Replication}
+
+Table 1 replicates Table 1 from \cite{golez2024holding},
+reporting annualized summary statistics for monthly dividend strip returns
+and market returns over the period 1996--2022.
+
+Our replicated market return statistics are close to the paper.
+The annualized mean market return is 8.20\% in our replication
+versus 8.54\% in the paper, and the annualized standard deviation
+is 16.25\% versus 15.68\%.
+The market Sharpe ratio in excess of the risk-free rate is 0.38 in our replication
+versus 0.42 in the paper.
+
+For strip returns, the replicated Sharpe ratio of 0.18 is close to the paper's 0.16,
+and the negative AR(1) of $-0.37$ is close to the paper's value of $-0.33$.
+These results support the paper's main qualitative finding that short-term
+dividend strips deliver Sharpe ratios comparable to the market despite substantially
+higher short-horizon return volatility.
+The somewhat higher mean strip return and standard deviation in our replication
+(9.34\% and 40.46\% versus 7.10\% and 31.98\%) likely reflect differences between
+our automated CRSP-based dividend construction and the paper's Datastream-based implementation.
+
+\input{\PathToOutput/table1.tex}
+
 \subsection{Extension: Updated Sample Through 2024}
+
+\subsubsection{Figure 1 Extension}
 
 Figure \ref{fig:figure1_extension} extends the sample through 2024.
 The red dashed vertical line marks the end of the original paper's sample period
@@ -218,10 +306,6 @@ Our summary statistics show that the average implied-minus-zero spread is negati
 over 2023--2024.
 This pattern differs from the original sample and suggests that the relationship
 documented in the paper may have weakened or reversed in recent years.
-
-A robustness check indicates that this result is not driven solely by a single outlier month.
-Even after removing the most negative month in the extended period,
-the average spread remains negative.
 
 \begin{figure}[h]
 \centering
@@ -238,7 +322,7 @@ in contrast to the pattern observed during 1996--2022.
 
 \begin{table}[h]
 \centering
-\caption{Extension Summary Statistics}
+\caption{Extension Summary Statistics: Interest Rates}
 \input{\PathToOutput/figure1_extension/figure1_extension_summary.tex}
 \caption*{
 This table reports summary statistics for the original sample, the extended period,
@@ -249,20 +333,50 @@ after the end of the original paper's sample.
 \label{table:figure1_extension_summary}
 \end{table}
 
+\subsubsection{Table 1 Extension}
+
+The extended version of Table 1 shows that market return statistics remain broadly stable
+relative to the paper sample, with the annualized mean increasing slightly to 9.08\%
+and the Sharpe ratio in excess of the risk-free rate rising to 0.43.
+
+Strip return statistics change substantially in the extended sample.
+The annualized mean strip return increases to 18.29\%
+and the standard deviation rises to 66.50\%.
+The AR(1) of strip returns weakens from $-0.37$ to $-0.14$.
+These changes are driven by several extreme strip return observations in 2023--2024.
+We interpret these results as likely reflecting increased sensitivity of the strip
+construction to end-of-day option quotes during a period of unusually large
+interest rate movements, rather than a stable shift in the economics of dividend strips.
+We therefore view the extended strip results as exploratory rather than fully stable.
+
+\input{\PathToOutput/table1_extended.tex}
+
 \section{Conclusion}
 
-We closely replicate Figure 1 from \cite{golez2024holding}
-using OptionMetrics end-of-day data together with FRED Treasury rates.
-Our results are numerically close to the published values,
+We replicate Figure 1 and Table 1 from \cite{golez2024holding}
+using OptionMetrics end-of-day data together with CRSP and FRED data.
+Our Figure 1 results are numerically close to the published values,
 with remaining differences likely attributable to differences between
 our end-of-day data construction and the paper's intraday CBOE-based implementation.
 
-The extension through 2024 yields a different pattern from that observed in the paper:
-the option-implied rate falls below the zero curve rate on average in the post-2022 period.
-This result remains after excluding the most extreme negative month in the extension sample,
-suggesting that the reversal is not driven entirely by a single outlier.
-Overall, the extension indicates that the relationship documented in the original sample
-may not be stable in more recent years.
+For Table 1, our market return statistics are close to the paper,
+while strip return statistics show somewhat larger deviations.
+Even so, our replication captures the paper's main qualitative pattern:
+strip returns exhibit much higher volatility and strongly negative autocorrelation,
+while maintaining a Sharpe ratio close to that of the market.
+In particular, our replicated strip Sharpe ratio in excess of the risk-free rate
+is 0.18, compared with 0.16 in the paper.
+
+The extension through 2024 shows that the option-implied rate falls below
+the zero curve rate on average in the post-2022 period,
+while the strip-return extension becomes much less stable.
+Market return moments remain broadly similar in the extended sample,
+but strip return moments are heavily influenced by several extreme observations
+in 2023--2024.
+We therefore interpret the extended strip results with caution.
+Overall, the extension suggests that the paper's interest-rate finding may not be stable
+in recent years, while the extension of strip returns is more sensitive
+to the practical details of options-based strip construction.
 
 \newpage
 \bibliographystyle{jpe}

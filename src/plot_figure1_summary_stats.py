@@ -93,6 +93,14 @@ def save_summary_table(df_stats):
         df_out[col] = df_out[col].map(lambda x: f"{x:.2f}")
     df_out["N"] = df_out["N"].astype(int)
 
+    # Rename columns to escape % for LaTeX
+    df_out = df_out.rename(columns={
+        "Mean (%)":     r"Mean (\%)",
+        "Std. Dev. (%)": r"Std. Dev. (\%)",
+        "Min (%)":      r"Min (\%)",
+        "Max (%)":      r"Max (\%)",
+    })
+
     latex = df_out.to_latex(
         index=False,
         escape=False,
