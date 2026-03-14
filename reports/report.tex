@@ -89,6 +89,50 @@ to obtain a 1-year constant-maturity zero curve rate.
 We obtain the 1-year constant maturity Treasury rate from FRED
 (series DGS1) and convert it to continuously compounded form.
 
+\section{Data Summary}
+
+Table \ref{table:summary_stats} reports descriptive statistics 
+for the three interest rate series across the full sample 
+and two sub-periods. The option-implied rate is on average 
+slightly higher than the zero curve rate in both sub-periods, 
+with a somewhat larger average difference in the second half 
+of the sample.
+
+Figure \ref{fig:spread} plots the monthly spread between 
+the option-implied rate and the zero curve rate. 
+The spread is more volatile in the early sample period 
+and becomes more stable after 2010.
+
+\begin{table}[h]
+\centering
+\caption{Descriptive Statistics for 12-Month Interest Rate Series}
+\input{\PathToOutput/figure1_summary_stats/figure1_summary_stats_table.tex}
+\caption*{
+This table reports descriptive statistics for the three 
+12-month interest rate series used in Figure 1. 
+Statistics are reported for the full sample (1996--2022) 
+and for two sub-periods. All rates are expressed in percent.
+}
+\label{table:summary_stats}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\caption{Implied-Minus-Zero Spread (1996--2022)}
+\includegraphics[width=0.95\linewidth]
+{\PathToOutput/figure1_summary_stats/figure1_implied_zero_spread.png}
+\caption*{
+This figure plots the monthly spread between the option-implied 
+rate and the zero curve rate in basis points. 
+The red dashed line shows the full-sample mean spread.
+The gray dashed vertical line marks the beginning of the 
+second half of the sample (January 2010). 
+The spread is more volatile in the early sample period 
+and is more often positive in the second half of the sample.
+}
+\label{fig:spread}
+\end{figure}
+
 \section{Methodology}
 
 Following Section 2.1 of the paper, we estimate option-implied interest rates
