@@ -14,6 +14,7 @@ Outputs:
     _data/clean_options.parquet
     _data/clean_zero_curve.parquet
     _data/clean_rates.parquet
+    _data/clean_crsp_sp500_monthly.parquet
 """
 
 from pathlib import Path
@@ -74,6 +75,95 @@ def clean_options(df_opt, df_spx):
     return df.reset_index(drop=True)
 
 
+def clean_spx_monthly(df_spx):
+    """
+    Aggregate daily CRSP S&P 500 data to monthly frequency and compute
+    monthly market log returns. Also infer a realized monthly dividend
+    series from the CRSP price index and total return series.
+
+    Steps:
+    1. Take the last available spindx within each calendar month
+    2. Compound daily vwretd to obtain monthly total simple return
+       (vwretd = value-weighted return including dividends)
+    3. Compound daily sprtrn to obtain monthly price-only return
+       (sprtrn = S&P 500 price return excluding dividends)
+    4. Infer realized monthly dividend in index points:
+       D_t = S_{t-1} * (R_total - R_price)
+    5. Compute monthly log market return:
+       mkt_ret = log(1 + R_total)
+
+    Parameters
+    ----------
+    df_spx : DataFrame
+        Daily CRSP S&P 500 data with columns:
+            date, spindx, vwretd, vwretx
+
+    Returns
+    -------
+    DataFrame with columns:
+        date         : month-end date
+        spindx       : month-end S&P 500 price index
+        div_monthly  : implied monthly realized dividend (index points)
+        mkt_ret      : monthly log market return (decimal)
+    """
+
+    df = df_spx.copy()
+    df['year_month'] = df['date'].dt.to_period('M')
+
+    # Step 1: last observed price index in each month
+    spindx_monthly = (
+        df.groupby('year_month')['spindx']
+        .last()
+        .reset_index()
+    )
+
+    # Step 2: monthly total return from compounded daily vwretd
+    # vwretd includes dividends → use for mkt_ret and div calculation
+    ret_total = (
+        df.groupby('year_month')['vwretd']
+        .apply(lambda x: (1 + x).prod() - 1)
+        .reset_index()
+        .rename(columns={'vwretd': 'ret_total'})
+    )
+
+    # Step 3: monthly price-only return from compounded daily vwretx
+    # vwretx = value-weighted return excluding dividends
+    # same universe as vwretd → consistent dividend extraction
+    ret_price = (
+        df.groupby('year_month')['vwretx']
+        .apply(lambda x: (1 + x).prod() - 1)
+        .reset_index()
+        .rename(columns={'vwretx': 'ret_price'})
+    )
+
+    # Merge all
+    df_monthly = (spindx_monthly
+        .merge(ret_total, on='year_month', how='inner')
+        .merge(ret_price, on='year_month', how='inner')
+    )
+
+    # Convert Period to month-end timestamp
+    df_monthly['date'] = df_monthly['year_month'].dt.to_timestamp('M')
+
+    # Lagged month-end price index
+    df_monthly['spindx_lag'] = df_monthly['spindx'].shift(1)
+
+    # Step 4: implied monthly realized dividend in index points
+    # D_t = S_{t-1} * (R_total - R_price)
+    df_monthly['div_monthly'] = (
+        df_monthly['spindx_lag']
+        * (df_monthly['ret_total'] - df_monthly['ret_price'])
+    )
+
+    # Step 5: monthly log market return (total, including dividends)
+    df_monthly['mkt_ret'] = np.log(1 + df_monthly['ret_total'])
+
+    # Drop first row (no lag) and helper columns
+    df_monthly = df_monthly.dropna(subset=['spindx_lag', 'mkt_ret'])
+    df_monthly = df_monthly[['date', 'spindx', 'div_monthly', 'mkt_ret']]
+
+    return df_monthly.reset_index(drop=True)
+
 if __name__ == "__main__":
     print("=" * 60)
     print("CLEANING DATA")
@@ -96,13 +186,18 @@ if __name__ == "__main__":
     print("Cleaning options...")
     df_opt_clean = clean_options(df_opt, df_spx)
 
+    print("Cleaning S&P 500 to monthly...")
+    df_spx_monthly = clean_spx_monthly(df_spx)
+
     # Save
     print("\nSaving clean data...")
     df_zero_clean.to_parquet(DATA_DIR / "clean_zero_curve.parquet", index=False)
     df_treas_clean.to_parquet(DATA_DIR / "clean_rates.parquet", index=False)
     df_opt_clean.to_parquet(DATA_DIR / "clean_options.parquet", index=False)
+    df_spx_monthly.to_parquet(DATA_DIR / "clean_crsp_sp500_monthly.parquet", index=False)
 
     print("\nDone! Output files:")
     print(f"  clean_zero_curve.parquet: {df_zero_clean.shape}")
     print(f"  clean_rates.parquet: {df_treas_clean.shape}")
     print(f"  clean_options.parquet: {df_opt_clean.shape}")
+    print(f"  clean_crsp_sp500_monthly.parquet: {df_spx_monthly.shape}")
