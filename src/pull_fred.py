@@ -67,11 +67,12 @@ def pull_fred_rates(start_date=START_DATE, end_date=END_DATE):
     
     print(f"Pulling 2-year and 10-year Treasury rates from FRED...")
     
-    series_codes = ['DGS2', 'DGS10']
+    series_codes = ['DGS1', 'DGS2', 'DGS10']
     
     df = web.DataReader(series_codes, 'fred', start_date, end_date)
     
     df = df.rename(columns={
+        'DGS1': 'treasury_1y',
         'DGS2': 'treasury_2y', 
         'DGS10': 'treasury_10y'
     })
@@ -107,11 +108,12 @@ def pull_all_data(start_date=START_DATE, end_date=END_DATE):
         how='outer'
     )
     df_treasury = df_treasury.sort_values('date').reset_index(drop=True)
-    df_treasury = df_treasury[['date', 'rf_1m', 'treasury_2y', 'treasury_10y']]
+    df_treasury = df_treasury[['date', 'rf_1m', 'treasury_1y', 'treasury_2y', 'treasury_10y']]
     
     print(f"Treasury rates: {df_treasury.shape}")
     print(f"Missing values:")
     print(f"rf_1m:        {df_treasury['rf_1m'].isna().sum()}")
+    print(f"treasury_1y:  {df_treasury['treasury_1y'].isna().sum()}")
     print(f"treasury_2y:  {df_treasury['treasury_2y'].isna().sum()}")
     print(f"treasury_10y: {df_treasury['treasury_10y'].isna().sum()}")
     

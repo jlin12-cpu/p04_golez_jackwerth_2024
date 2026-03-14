@@ -1,0 +1,227 @@
+% !TeX root = report.tex
+\newcommand*{\PathToAssets}{../assets}%
+\newcommand*{\PathToOutput}{../output}%
+
+\documentclass[12pt]{article}
+\usepackage{my_article_header}
+\usepackage{my_common_header}
+
+\begin{document}
+
+\title{
+Replication of ``Holding Period Effects in Dividend Strip Returns''
+\\{\color{blue} \large Replication Report}
+}
+
+\author{
+Jie Lin and Zimeng Yi\footnote{University of Chicago}
+}
+
+\begin{titlepage}
+\maketitle
+
+\doublespacing
+\begin{abstract}
+We replicate Figure 1 from \cite{golez2024holding}, which plots
+12-month maturity interest rates from three sources:
+option-implied rates derived from S\&P 500 index options,
+zero curve rates from OptionMetrics, and constant maturity Treasury rates from FRED.
+Following the methodology in the paper, we estimate option-implied interest rates
+using the outer product approach for 1996--2003 and the regression approach for 2004--2022.
+Our replication closely matches the paper's findings:
+the average difference between the option-implied rate and the zero curve rate is
+8.15 basis points in our sample, compared with 7 basis points reported in the paper.
+We then extend the sample through 2024 and find that the option-implied rate
+falls below the zero curve rate on average in the post-2022 period.
+This suggests that the relationship documented in the original sample may have weakened
+or reversed in recent years.
+\end{abstract}
+
+\end{titlepage}
+
+\doublespacing
+
+\section{Introduction}
+
+\cite{golez2024holding} estimate short-term dividend strip prices
+from 27 years of S\&P 500 index options data covering 1996--2022.
+A key methodological contribution of the paper is the use of
+option-implied interest rates rather than exogenous zero curve rates
+when estimating strip prices.
+The authors show that even a small error of 6 basis points in the interest rate
+can bias half-annual dividend strip returns by 0.86\%.
+
+Figure 1 of the paper plots three 12-month maturity interest rate series:
+the option-implied rate, the zero curve rate from OptionMetrics,
+and the constant maturity Treasury rate from FRED.
+The paper reports that the option-implied rate is on average 7 basis points
+higher than the zero curve rate over the full sample,
+with the relative difference increasing from 0.64\% in the first half of the sample
+to 11.80\% in the second half.
+
+In this replication, we reproduce Figure 1 using WRDS-accessed OptionMetrics
+and CRSP data together with Treasury rate data from FRED,
+and then extend the sample through 2024
+to examine whether the relationship between the two rates
+has changed in recent years.
+
+\section{Data}
+
+We use data from the following sources.
+
+\textbf{SPX options.}
+We use European S\&P 500 index options from OptionMetrics via WRDS,
+covering January 1996 through December 2024.
+Following the paper, we use options observed on the last business day of each month,
+with maturity of at least 90 days and bid and ask quotes both at or above \$3.
+We further restrict the sample to options with moneyness between 0.5 and 1.5.
+One important difference from the paper is that the original study uses intraday CBOE data
+between 10 a.m.\ and 2 p.m., whereas our replication uses end-of-day OptionMetrics data.
+This difference likely accounts for part of the remaining gap between our estimates
+and the published values.
+
+\textbf{Zero curve rates.}
+We obtain daily zero curve rates from OptionMetrics.
+These rates are expressed in continuously compounded form and are linearly interpolated
+to obtain a 1-year constant-maturity zero curve rate.
+
+\textbf{Treasury rates.}
+We obtain the 1-year constant maturity Treasury rate from FRED
+(series DGS1) and convert it to continuously compounded form.
+
+\section{Methodology}
+
+Following Section 2.1 of the paper, we estimate option-implied interest rates
+using two methods.
+
+\textbf{Outer Product Approach (1996--2003).}
+For each pair of strike prices $(X_i, X_j)$ where $X_i > X_j$, we compute
+\begin{equation}
+r_f
+=
+-\frac{1}{\tau}
+\ln\left[
+\frac{(P(X_i)-C(X_i))-(P(X_j)-C(X_j))}{X_i-X_j}
+\right].
+\end{equation}
+We then take the median across all valid strike pairs for a given date and maturity.
+
+\textbf{Regression Approach (2004--2022).}
+For later years, we estimate
+\begin{equation}
+S_t - C(X) + P(X) = P^{\tau} + \beta X + \epsilon,
+\end{equation}
+where $\beta = e^{-r_f \tau}$.
+The implied interest rate is then recovered as
+\begin{equation}
+r_f = -\frac{1}{\tau}\ln \hat{\beta}.
+\end{equation}
+
+For both the option-implied rate and the zero curve rate,
+we linearly interpolate across maturities to obtain a 1-year constant-maturity series.
+
+\section{Results}
+
+\subsection{Figure 1 Replication}
+
+Figure \ref{fig:figure1} replicates Figure 1 from \cite{golez2024holding}.
+The three interest rate series track one another closely throughout the sample period.
+Consistent with the paper, the option-implied rate is generally slightly above
+the zero curve rate.
+
+Our replication produces an average difference of 8.15 basis points
+between the option-implied rate and the zero curve rate,
+compared with 7 basis points reported in the paper.
+The full-sample relative difference in our replication is 3.14\%,
+compared with 2.82\% in the paper.
+Table \ref{table:figure1_summary} reports the full set of comparison statistics.
+
+\begin{figure}[h]
+\centering
+\caption{12-Month Interest Rates (1996--2022)}
+\includegraphics[width=0.95\linewidth]{\PathToOutput/figure1/figure1.png}
+\caption*{
+This figure plots three 12-month maturity interest rate series from January 1996
+through December 2022: the option-implied rate estimated from put-call parity pairs
+of S\&P 500 index options, the zero curve rate from OptionMetrics,
+and the 1-year constant maturity Treasury rate from FRED.
+All rates are expressed in continuously compounded percentage terms.
+}
+\label{fig:figure1}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Figure 1 Summary Statistics}
+\input{\PathToOutput/figure1/figure1_summary.tex}
+\caption*{
+This table compares our replicated summary statistics with those reported in
+\cite{golez2024holding}.
+The average difference is measured in basis points (bp).
+Relative differences are computed relative to the average zero curve rate.
+}
+\label{table:figure1_summary}
+\end{table}
+
+\subsection{Extension: Updated Sample Through 2024}
+
+Figure \ref{fig:figure1_extension} extends the sample through 2024.
+The red dashed vertical line marks the end of the original paper's sample period
+in December 2022.
+
+In the extended period, the option-implied rate falls below the zero curve rate on average.
+Our summary statistics show that the average implied-minus-zero spread is negative
+over 2023--2024.
+This pattern differs from the original sample and suggests that the relationship
+documented in the paper may have weakened or reversed in recent years.
+
+A robustness check indicates that this result is not driven solely by a single outlier month.
+Even after removing the most negative month in the extended period,
+the average spread remains negative.
+
+\begin{figure}[h]
+\centering
+\caption{12-Month Interest Rates (1996--2024, Extended Sample)}
+\includegraphics[width=0.95\linewidth]{\PathToOutput/figure1_extension/figure1_extension.png}
+\caption*{
+This figure extends the Figure 1 replication through 2024.
+The red dashed vertical line marks the end of the original paper's sample in December 2022.
+In the extended period, the option-implied rate is on average below the zero curve rate,
+in contrast to the pattern observed during 1996--2022.
+}
+\label{fig:figure1_extension}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Extension Summary Statistics}
+\input{\PathToOutput/figure1_extension/figure1_extension_summary.tex}
+\caption*{
+This table reports summary statistics for the original sample, the extended period,
+and the full sample through 2024.
+The extension shows that the implied-minus-zero spread turns negative on average
+after the end of the original paper's sample.
+}
+\label{table:figure1_extension_summary}
+\end{table}
+
+\section{Conclusion}
+
+We closely replicate Figure 1 from \cite{golez2024holding}
+using OptionMetrics end-of-day data together with FRED Treasury rates.
+Our results are numerically close to the published values,
+with remaining differences likely attributable to differences between
+our end-of-day data construction and the paper's intraday CBOE-based implementation.
+
+The extension through 2024 yields a different pattern from that observed in the paper:
+the option-implied rate falls below the zero curve rate on average in the post-2022 period.
+This result remains after excluding the most extreme negative month in the extension sample,
+suggesting that the reversal is not driven entirely by a single outlier.
+Overall, the extension indicates that the relationship documented in the original sample
+may not be stable in more recent years.
+
+\newpage
+\bibliographystyle{jpe}
+\bibliography{bibliography.bib}
+
+\end{document}

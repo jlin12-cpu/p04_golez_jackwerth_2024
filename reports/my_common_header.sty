@@ -9,13 +9,13 @@
 \setlength {\marginparwidth }{2cm}
 
 %https://tex.stackexchange.com/questions/3473/blackboard-bold-variants-for-greek-letters
-\usepackage[bbgreekl]{mathbbol}
+%\usepackage[bbgreekl]{mathbbol}
 
 \usepackage{amsmath, amsfonts, amscd, amssymb, amsthm}
 \usepackage{url}
 \usepackage{enumerate}
 \usepackage{float}
-\usepackage{bbm}
+%\usepackage{dsfont}
 \usepackage{color,soul}
 \usepackage{thmtools}
 \usepackage{threeparttable}
@@ -290,8 +290,9 @@ title    = #3,
 %QED "grave" symbol
 \renewcommand{\qed}{\begin{flushright} $\square$ \end{flushright}}
 %vector of ones
-\newcommand{\1}{\mathbbm{1}}
-\newcommand{\E}{\mathbbm{E}}
+% \usepackage{bbm}
+\newcommand{\1}{\mathbf{1}}
+\newcommand{\E}{\mathbb{E}}
 %differential d
 \newcommand{\dd}{\, \mathrm{d}}
 %variance and covariance
