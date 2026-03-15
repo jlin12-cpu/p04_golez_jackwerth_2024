@@ -1,3 +1,42 @@
+"""
+Pull raw SPX options and zero-curve data from OptionMetrics via WRDS.
+
+This script downloads two key raw data inputs used in the replication of
+Golez and Jackwerth (2024), "Holding Period Effects in Dividend Strip Returns":
+
+1. European S&P 500 index options (SPX options) from OptionMetrics IvyDB
+2. Daily zero-coupon yield curve data from OptionMetrics
+
+For the options data, the script:
+- pulls data year by year to manage memory,
+- filters to European SPX options (secid = 108105),
+- keeps options with maturity of at least 90 days,
+- requires positive bid and ask quotes,
+- requires bid-ask midpoint of at least $3,
+- saves the full raw options panel, and
+- constructs a month-end options file by keeping only the last trading day
+  of each month.
+
+For the zero-curve data, the script downloads the daily OptionMetrics
+zero-coupon term structure over the project sample period.
+
+Outputs
+-------
+_data/optionmetrics_spx_raw.parquet
+    Full raw SPX options panel pulled from OptionMetrics.
+
+_data/optionmetrics_spx_monthly.parquet
+    SPX options filtered to the last trading day of each month.
+
+_data/optionmetrics_zero_curve.parquet
+    Daily zero-coupon curve from OptionMetrics.
+
+Notes
+-----
+This script is part of the raw-data pull layer of the project pipeline.
+It is intentionally separate from the cleaning and analysis scripts.
+"""
+
 from pathlib import Path
 import pandas as pd
 import wrds
