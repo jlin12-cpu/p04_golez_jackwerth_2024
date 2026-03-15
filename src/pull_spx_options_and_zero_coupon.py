@@ -12,7 +12,7 @@ DATA_DIR.mkdir(exist_ok=True)
 
 WRDS_USERNAME = config("WRDS_USERNAME")
 START_DATE = pd.to_datetime(config("START_DATE", default="1996-01-01"))
-END_DATE = pd.to_datetime(config("END_DATE", default="2024-12-31"))
+END_DATE = pd.to_datetime(config("END_DATE", default="2025-12-31"))
 
 SPX_SECID = 108105
 OPTION_SPX_FILE = DATA_DIR / "optionmetrics_spx_raw.parquet"
@@ -106,11 +106,11 @@ def pull_zero_coupon():
 
     with wrds.Connection(wrds_username=WRDS_USERNAME) as db:
 
-        query = """
+        query = f"""
             SELECT date, days, rate
             FROM optionm.zerocd
-            WHERE date >= '1996-01-01'
-              AND date <= '2024-12-31'
+            WHERE date >= '{START_DATE.date()}'
+              AND date <= '{END_DATE.date()}'
             ORDER BY date, days
         """
 

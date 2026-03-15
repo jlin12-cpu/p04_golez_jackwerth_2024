@@ -1,305 +1,370 @@
-"""Run or update the project. This file uses the `doit` Python package. It works
-like a Makefile, but is Python-based
+"""
+dodo.py — PyDoit task definitions for Golez & Jackwerth (2024) replication.
 
+Run the full pipeline:
+    doit
+
+Run a specific task:
+    doit <task_name>
+
+List all tasks:
+    doit list
+
+The pipeline is organized into four layers:
+    1. Pull   : fetch raw data from WRDS / FRED / Kenneth French
+    2. Clean  : standardize and tidy raw data
+    3. Calc   : compute implied rates, strip prices, and returns
+    4. Output : produce figures and tables
 """
 
-#######################################
-## Configuration and Helpers for PyDoit
-#######################################
-## Make sure the src folder is in the path
-import sys
-
-sys.path.insert(1, "./src/")
-
-import shutil
-from os import environ, getcwd, path
 from pathlib import Path
 
-from colorama import Fore, Style, init
+# =============================================================================
+# Paths
+# =============================================================================
 
-## Custom reporter: Print PyDoit Text in Green
-# This is helpful because some tasks write to sterr and pollute the output in
-# the console. I don't want to mute this output, because this can sometimes
-# cause issues when, for example, LaTeX hangs on an error and requires
-# presses on the keyboard before continuing. However, I want to be able
-# to easily see the task lines printed by PyDoit. I want them to stand out
-# from among all the other lines printed to the console.
-from doit.reporter import ConsoleReporter
-
-from settings import config
-
-try:
-    in_slurm = environ["SLURM_JOB_ID"] is not None
-except:
-    in_slurm = False
+SRC = Path("src")
+DATA = Path("_data")
+CALC = DATA / "calc"
+OUT = Path("output")
 
 
-class GreenReporter(ConsoleReporter):
-    def write(self, stuff, **kwargs):
-        doit_mark = stuff.split(" ")[0].ljust(2)
-        task = " ".join(stuff.split(" ")[1:]).strip() + "\n"
-        output = (
-            Fore.GREEN
-            + doit_mark
-            + f" {path.basename(getcwd())}: "
-            + task
-            + Style.RESET_ALL
-        )
-        self.outstream.write(output)
-
-
-if not in_slurm:
-    DOIT_CONFIG = {
-        "reporter": GreenReporter,
-        # other config here...
-        # "cleanforget": True, # Doit will forget about tasks that have been cleaned.
-        "backend": "sqlite3",
-        "dep_file": "./.doit-db.sqlite",
-    }
-else:
-    DOIT_CONFIG = {"backend": "sqlite3", "dep_file": "./.doit-db.sqlite"}
-init(autoreset=True)
-
-
-BASE_DIR = config("BASE_DIR")
-DATA_DIR = config("DATA_DIR")
-MANUAL_DATA_DIR = config("MANUAL_DATA_DIR")
-OUTPUT_DIR = config("OUTPUT_DIR")
-OS_TYPE = config("OS_TYPE")
-USER = config("USER")
-
-## Helpers for handling Jupyter Notebook tasks
-environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
-
-# fmt: off
-## Helper functions for automatic execution of Jupyter notebooks
-def jupyter_execute_notebook(notebook_path):
-    return f"jupyter nbconvert --execute --to notebook --ClearMetadataPreprocessor.enabled=True --inplace {notebook_path}"
-def jupyter_to_html(notebook_path, output_dir=OUTPUT_DIR):
-    return f"jupyter nbconvert --to html --output-dir={output_dir} {notebook_path}"
-def jupyter_to_md(notebook_path, output_dir=OUTPUT_DIR):
-    """Requires jupytext"""
-    return f"jupytext --to markdown --output-dir={output_dir} {notebook_path}"
-def jupyter_clear_output(notebook_path):
-    """Clear the output of a notebook"""
-    return f"jupyter nbconvert --ClearOutputPreprocessor.enabled=True --ClearMetadataPreprocessor.enabled=True --inplace {notebook_path}"
-# fmt: on
-
-
-def mv(from_path, to_path):
-    """Move a file to a folder"""
-    from_path = Path(from_path)
-    to_path = Path(to_path)
-    to_path.mkdir(parents=True, exist_ok=True)
-    if OS_TYPE == "nix":
-        command = f"mv {from_path} {to_path}"
-    else:
-        command = f"move {from_path} {to_path}"
-    return command
-
-
-def copy_file(origin_path, destination_path, mkdir=True):
-    """Create a Python action for copying a file."""
-
-    def _copy_file():
-        origin = Path(origin_path)
-        dest = Path(destination_path)
-        if mkdir:
-            dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(origin, dest)
-
-    return _copy_file
-
-
-##################################
-## Begin rest of PyDoit tasks here
-##################################
-
+# =============================================================================
+# Helpers
+# =============================================================================
 
 def task_config():
-    """Create empty directories for data and output if they don't exist"""
-    return {
-        "actions": ["ipython ./src/settings.py"],
-        "targets": [DATA_DIR, OUTPUT_DIR],
-        "file_dep": ["./src/settings.py"],
-        "clean": [],
-    }
-
-
-def task_pull():
-    """Pull data from external sources"""
-    yield {
-        "name": "fred",
-        "doc": "Pull data from FRED",
-        "actions": [
-            "ipython ./src/settings.py",
-            "ipython ./src/pull_fred.py",
-        ],
-        "targets": [DATA_DIR / "fred.parquet"],
-        "file_dep": ["./src/settings.py", "./src/pull_fred.py"],
-        "clean": [],
-    }
-    yield {
-        "name": "crsp_stock",
-        "doc": "Pull CRSP stock data from WRDS",
-        "actions": [
-            "ipython ./src/settings.py",
-            "ipython ./src/pull_CRSP_stock.py",
-        ],
-        "targets": [DATA_DIR / "CRSP_stock.parquet"],
-        "file_dep": ["./src/settings.py", "./src/pull_CRSP_stock.py"],
-        "clean": [],
-    }
-
-
-def task_summary_stats():
-    """Generate summary statistics tables"""
-    file_dep = ["./src/example_table.py"]
-    file_output = [
-        "example_table.tex",
-        "pandas_to_latex_simple_table1.tex",
-    ]
-    targets = [OUTPUT_DIR / file for file in file_output]
-
+    """Create required directories if they do not exist."""
     return {
         "actions": [
-            "ipython ./src/example_table.py",
-            "ipython ./src/pandas_to_latex_demo.py",
+            "mkdir -p _data",
+            "mkdir -p _data/calc",
+            "mkdir -p output",
         ],
-        "targets": targets,
-        "file_dep": file_dep,
-        "clean": True,
+        "verbosity": 2,
     }
 
 
-def task_example_plot():
-    """Example plots"""
-    file_dep = [Path("./src") / file for file in ["example_plot.py", "pull_fred.py"]]
-    file_output = ["example_plot.png"]
-    targets = [OUTPUT_DIR / file for file in file_output]
+# =============================================================================
+# Layer 1: Pull raw data
+# =============================================================================
 
+def task_pull_crsp_spindx():
+    """Pull daily S&P 500 index data (spindx, vwretd, vwretx, sprtrn) from CRSP."""
     return {
-        "actions": [
-            "ipython ./src/example_plot.py",
-        ],
-        "targets": targets,
-        "file_dep": file_dep,
-        "clean": True,
+        "actions": [f"python {SRC / 'pull_crsp_spindx_level.py'}"],
+        "targets": [DATA / "crsp_sp500_daily.parquet"],
+        "task_dep": ["config"],
+        "verbosity": 2,
     }
 
 
-notebook_tasks = {
-    "01_example_notebook_interactive_ipynb": {
-        "path": "./src/01_example_notebook_interactive_ipynb.py",
-        "file_dep": [],
-        "targets": [],
-    },
-    "02_example_with_dependencies_ipynb": {
-        "path": "./src/02_example_with_dependencies_ipynb.py",
-        "file_dep": ["./src/pull_fred.py"],
-        "targets": [OUTPUT_DIR / "GDP_graph.png"],
-    },
-}
-
-
-# fmt: off
-def task_run_notebooks():
-    """Preps the notebooks for presentation format.
-    Execute notebooks if the script version of it has been changed.
-    """
-    for notebook in notebook_tasks.keys():
-        pyfile_path = Path(notebook_tasks[notebook]["path"])
-        notebook_path = pyfile_path.with_suffix(".ipynb")
-        yield {
-            "name": notebook,
-            "actions": [
-                """python -c "import sys; from datetime import datetime; print(f'Start """ + notebook + """: {datetime.now()}', file=sys.stderr)" """,
-                f"jupytext --to notebook --output {notebook_path} {pyfile_path}",
-                jupyter_execute_notebook(notebook_path),
-                jupyter_to_html(notebook_path),
-                mv(notebook_path, OUTPUT_DIR),
-                """python -c "import sys; from datetime import datetime; print(f'End """ + notebook + """: {datetime.now()}', file=sys.stderr)" """,
-            ],
-            "file_dep": [
-                pyfile_path,
-                *notebook_tasks[notebook]["file_dep"],
-            ],
-            "targets": [
-                OUTPUT_DIR / f"{notebook}.html",
-                *notebook_tasks[notebook]["targets"],
-            ],
-            "clean": True,
-        }
-# fmt: on
-
-###############################################################
-## Task below is for LaTeX compilation
-###############################################################
-
-
-def task_compile_latex_docs():
-    """Compile the LaTeX documents to PDFs"""
-    file_dep = [
-        "./reports/report_example.tex",
-        "./reports/my_article_header.sty",
-        "./reports/slides_example.tex",
-        "./reports/my_beamer_header.sty",
-        "./reports/my_common_header.sty",
-        "./reports/report_simple_example.tex",
-        "./reports/slides_simple_example.tex",
-        "./src/example_plot.py",
-        "./src/example_table.py",
-    ]
-    targets = [
-        "./reports/report_example.pdf",
-        "./reports/slides_example.pdf",
-        "./reports/report_simple_example.pdf",
-        "./reports/slides_simple_example.pdf",
-    ]
-
+def task_pull_crsp_treasuries():
+    """Pull monthly 2-year and 10-year Treasury returns from CRSP."""
     return {
-        "actions": [
-            # My custom LaTeX templates
-            "latexmk -xelatex -halt-on-error -cd ./reports/report_example.tex",  # Compile
-            "latexmk -xelatex -halt-on-error -c -cd ./reports/report_example.tex",  # Clean
-            "latexmk -xelatex -halt-on-error -cd ./reports/slides_example.tex",  # Compile
-            "latexmk -xelatex -halt-on-error -c -cd ./reports/slides_example.tex",  # Clean
-            # Simple templates based on small adjustments to Overleaf templates
-            "latexmk -xelatex -halt-on-error -cd ./reports/report_simple_example.tex",  # Compile
-            "latexmk -xelatex -halt-on-error -c -cd ./reports/report_simple_example.tex",  # Clean
-            "latexmk -xelatex -halt-on-error -cd ./reports/slides_simple_example.tex",  # Compile
-            "latexmk -xelatex -halt-on-error -c -cd ./reports/slides_simple_example.tex",  # Clean
-        ],
-        "targets": targets,
-        "file_dep": file_dep,
-        "clean": True,
+        "actions": [f"python {SRC / 'pull_crsp_treasuries.py'}"],
+        "targets": [DATA / "crsp_treasury_returns.parquet"],
+        "task_dep": ["config"],
+        "verbosity": 2,
     }
 
-sphinx_targets = [
-    "./docs/index.html",
-]
 
-
-def task_build_chartbook_site():
-    """Compile Sphinx Docs"""
-    notebook_scripts = [
-        Path(notebook_tasks[notebook]["path"])
-        for notebook in notebook_tasks.keys()
-    ]
-    file_dep = [
-        "./README.md",
-        "./chartbook.toml",
-        *notebook_scripts,
-    ]
-
+def task_pull_fred():
+    """Pull Treasury rates and Fama-French factors (daily + monthly)."""
     return {
-        "actions": [
-            "chartbook build -f",
-        ],  # Use docs as build destination
-        "targets": sphinx_targets,
-        "file_dep": file_dep,
+        "actions": [f"python {SRC / 'pull_fred.py'}"],
+        "targets": [
+            DATA / "fred_treasury_rates.parquet",
+            DATA / "fama_french_factors.parquet",
+            DATA / "fama_french_monthly.parquet",
+        ],
+        "task_dep": ["config"],
+        "verbosity": 2,
+    }
+
+
+def task_pull_optionmetrics():
+    """Pull SPX options (month-end) and zero curve from OptionMetrics via WRDS."""
+    return {
+        "actions": [f"python {SRC / 'pull_spx_options_and_zero_coupon.py'}"],
+        "targets": [
+            DATA / "optionmetrics_spx_raw.parquet",
+            DATA / "optionmetrics_spx_monthly.parquet",
+            DATA / "optionmetrics_zero_curve.parquet",
+        ],
+        "task_dep": ["config"],
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
+# Layer 2: Clean data
+# =============================================================================
+
+def task_clean_data():
+    """Standardize and tidy raw data into analysis-ready parquet files."""
+    return {
+        "actions": [f"python {SRC / 'clean_data.py'}"],
+        "file_dep": [
+            DATA / "optionmetrics_spx_monthly.parquet",
+            DATA / "optionmetrics_zero_curve.parquet",
+            DATA / "fred_treasury_rates.parquet",
+            DATA / "crsp_sp500_daily.parquet",
+        ],
+        "targets": [
+            DATA / "clean_options.parquet",
+            DATA / "clean_zero_curve.parquet",
+            DATA / "clean_rates.parquet",
+            DATA / "clean_crsp_sp500_monthly.parquet",
+        ],
         "task_dep": [
-            "run_notebooks",
+            "config",
+            "pull_crsp_spindx",
+            "pull_fred",
+            "pull_optionmetrics",
         ],
-        "clean": True,
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
+# Layer 3: Calc
+# =============================================================================
+
+def task_calc_implied_rates():
+    """Calculate option-implied interest rates and interpolate to 1-year maturity."""
+    return {
+        "actions": [f"python {SRC / 'calc_implied_rates.py'}"],
+        "file_dep": [
+            DATA / "clean_options.parquet",
+            DATA / "clean_zero_curve.parquet",
+        ],
+        "targets": [
+            CALC / "implied_rates.parquet",
+            CALC / "implied_rates_1y.parquet",
+            CALC / "zero_curve_1y.parquet",
+        ],
+        "task_dep": ["clean_data"],
+        "verbosity": 2,
+    }
+
+
+def task_calc_strip_prices():
+    """Calculate dividend strip prices from SPX options via put-call parity."""
+    return {
+        "actions": [f"python {SRC / 'calc_strip_prices.py'}"],
+        "file_dep": [
+            DATA / "clean_options.parquet",
+            CALC / "implied_rates.parquet",
+        ],
+        "targets": [
+            CALC / "strip_prices.parquet",
+            CALC / "all_strip_prices.parquet",
+        ],
+        "task_dep": ["calc_implied_rates"],
+        "verbosity": 2,
+    }
+
+
+def task_calc_returns():
+    """Calculate monthly strip and market returns plus excess-return variants."""
+    return {
+        "actions": [f"python {SRC / 'calc_returns.py'}"],
+        "file_dep": [
+            CALC / "strip_prices.parquet",
+            CALC / "all_strip_prices.parquet",
+            DATA / "clean_crsp_sp500_monthly.parquet",
+            DATA / "fama_french_monthly.parquet",
+            DATA / "crsp_treasury_returns.parquet",
+        ],
+        "targets": [
+            CALC / "monthly_returns.parquet",
+        ],
+        "task_dep": [
+            "calc_strip_prices",
+            "pull_crsp_treasuries",
+            "pull_fred",
+        ],
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
+# Layer 4: Output — Figure 1
+# =============================================================================
+
+def task_plot_figure1():
+    """Replicate Figure 1: 12-month interest rates (1996-2022)."""
+    return {
+        "actions": [f"python {SRC / 'plot_figure1.py'}"],
+        "file_dep": [
+            CALC / "implied_rates_1y.parquet",
+            CALC / "zero_curve_1y.parquet",
+            DATA / "clean_rates.parquet",
+        ],
+        "targets": [
+            OUT / "figure1/figure1.png",
+            OUT / "figure1/figure1_series.csv",
+            OUT / "figure1/figure1_summary.csv",
+            OUT / "figure1/figure1_summary.tex",
+        ],
+        "task_dep": ["calc_implied_rates"],
+        "verbosity": 2,
+    }
+
+
+def task_plot_figure1_extension():
+    """Extended Figure 1: 12-month interest rates beyond 2022."""
+    return {
+        "actions": [f"python {SRC / 'plot_figure1_extension.py'}"],
+        "file_dep": [
+            CALC / "implied_rates_1y.parquet",
+            CALC / "zero_curve_1y.parquet",
+            DATA / "clean_rates.parquet",
+        ],
+        "targets": [
+            OUT / "figure1_extension/figure1_extension.png",
+            OUT / "figure1_extension/figure1_extension_diagnostics.csv",
+            OUT / "figure1_extension/figure1_extension_robustness.csv",
+            OUT / "figure1_extension/figure1_extension_series.csv",
+            OUT / "figure1_extension/figure1_extension_summary.csv",
+            OUT / "figure1_extension/figure1_extension_summary.tex",
+        ],
+        "task_dep": ["calc_implied_rates"],
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
+# Layer 4: Output — Figure 2
+# =============================================================================
+
+def task_figure2():
+    """Replicate Figure 2: cumulative returns (1996-2022)."""
+    return {
+        "actions": [f"python {SRC / 'figure2.py'}"],
+        "file_dep": [CALC / "monthly_returns.parquet"],
+        "targets": [
+            OUT / "figure2/figure2.png",
+            OUT / "figure2/figure2_series.csv",
+            OUT / "figure2/figure2_terminal_comparison.csv",
+        ],
+        "task_dep": ["calc_returns"],
+        "verbosity": 2,
+    }
+
+
+def task_figure2_extended():
+    """Extended Figure 2: cumulative returns beyond 2022."""
+    return {
+        "actions": [f"python {SRC / 'figure2_extended.py'}"],
+        "file_dep": [CALC / "monthly_returns.parquet"],
+        "targets": [
+            OUT / "figure2_extended/figure2_extended.png",
+            OUT / "figure2_extended/figure2_extended_series.csv",
+            OUT / "figure2_extended/figure2_extended_terminal.csv",
+        ],
+        "task_dep": ["calc_returns"],
+        "verbosity": 2,
+    }
+
+
+def task_figure2_extended_winsorized():
+    """Extended Figure 2 with winsorized strip returns (robustness check)."""
+    return {
+        "actions": [f"python {SRC / 'figure2_extended_winsorized.py'}"],
+        "file_dep": [CALC / "monthly_returns.parquet"],
+        "targets": [
+            OUT / "figure2_extended_winsorized/figure2_extended_winsorized.png",
+            OUT / "figure2_extended_winsorized/figure2_extended_winsorized_series.csv",
+            OUT / "figure2_extended_winsorized/figure2_extended_winsorized_terminal.csv",
+        ],
+        "task_dep": ["calc_returns"],
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
+# Layer 4: Output — Figure 3
+# =============================================================================
+
+def task_figure3():
+    """Replicate Figure 3: annualized std across holding periods (1996-2022)."""
+    return {
+        "actions": [f"python {SRC / 'figure3.py'}"],
+        "file_dep": [CALC / "monthly_returns.parquet"],
+        "targets": [
+            OUT / "figure3/figure3.png",
+            OUT / "figure3/figure3_series.csv",
+        ],
+        "task_dep": ["calc_returns"],
+        "verbosity": 2,
+    }
+
+
+def task_figure3_extended():
+    """Extended Figure 3: annualized std across holding periods beyond 2022."""
+    return {
+        "actions": [f"python {SRC / 'figure3_extended.py'}"],
+        "file_dep": [CALC / "monthly_returns.parquet"],
+        "targets": [
+            OUT / "figure3_extended/figure3_extended.png",
+            OUT / "figure3_extended/figure3_extended_series.csv",
+        ],
+        "task_dep": ["calc_returns"],
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
+# Layer 4: Output — Table 1
+# =============================================================================
+
+def task_table1():
+    """Replicate Table 1: monthly return summary statistics (1996-2022)."""
+    return {
+        "actions": [f"python {SRC / 'table1.py'}"],
+        "file_dep": [CALC / "monthly_returns.parquet"],
+        "targets": [
+            OUT / "table1.csv",
+            OUT / "table1.tex",
+        ],
+        "task_dep": ["calc_returns"],
+        "verbosity": 2,
+    }
+
+
+def task_table1_extended():
+    """Extended Table 1: monthly return summary statistics beyond 2022."""
+    return {
+        "actions": [f"python {SRC / 'table1_extended.py'}"],
+        "file_dep": [CALC / "monthly_returns.parquet"],
+        "targets": [
+            OUT / "table1_extended.csv",
+            OUT / "table1_extended.tex",
+        ],
+        "task_dep": ["calc_returns"],
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
+# Full pipeline
+# =============================================================================
+
+def task_all():
+    """Run the full replication pipeline."""
+    return {
+        "actions": None,
+        "task_dep": [
+            "plot_figure1",
+            "plot_figure1_extension",
+            "figure2",
+            "figure2_extended",
+            "figure2_extended_winsorized",
+            "figure3",
+            "figure3_extended",
+            "table1",
+            "table1_extended",
+        ],
     }

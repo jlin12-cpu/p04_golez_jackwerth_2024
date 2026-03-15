@@ -22,7 +22,7 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 WRDS_USERNAME = config("WRDS_USERNAME")
 START_DATE = config("START_DATE", default="1996-01-01")
-END_DATE = config("END_DATE", default="2022-12-31")
+END_DATE = config("END_DATE", default="2025-12-31")
 
 
 def pull_spx_daily(
