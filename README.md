@@ -1,158 +1,255 @@
-Holding Period Effects in Dividend Strip Returns
-================================================
+# Holding Period Effects in Dividend Strip Returns
 
 ## About this project
 
-Homework 3 for FINM 32900
+This repository contains our final project for **FINM 32900** at the University of Chicago.
 
-## Quick Start
+We replicate key empirical results from:
 
-The quickest way to run code in this repo is to use the following steps.
+> Golez, Benjamin, and Jens Jackwerth.  
+> *Holding Period Effects in Dividend Strip Returns*.  
+> *Review of Financial Studies* 37, no. 10 (2024): 3188–3215.
 
-You must have TexLive (or another LaTeX distribution) installed on your computer and available in your path.
-You can do this by downloading and installing it from here ([windows](https://tug.org/texlive/windows.html#install)
-and [mac](https://tug.org/mactex/mactex-download.html) installers).
+Our assigned project is **P04. Holding Period Effects in Dividend Strip Returns**.
 
+Using an end-to-end reproducible analytical pipeline, we replicate and extend the following objects from the paper:
 
-First, create a virtual environment and activate it:
+- **Figure 1**: 12-month interest rates
+- **Figure 2**: cumulative returns
+- **Figure 3**: annualized volatility across holding periods
+- **Table 1**: monthly return summary statistics
+
+We also extend these results through the most recent available sample in our pipeline (through **2024**).
+
+This project is formatted using the **cookiecutter chartbook template** and automated using **PyDoit**.
+
+---
+
+## Team responsibilities
+
+Both group members contributed to understanding the paper, designing the pipeline, validating results, and preparing the final report. Primary responsibilities were divided as follows.
+
+### Jie Lin
+- Built and tested major parts of the automated data and calculation pipeline
+- Worked on strip return construction and diagnostics
+- Implemented Figure 2 replication and extensions
+- Implemented Figure 3 replication and extensions
+- Integrated figures and tables into the LaTeX report
+- Helped test end-to-end reproducibility with PyDoit
+
+### Zimeng Yi
+- Worked on Figure 1 replication and extensions
+- Worked on Table 1 replication and extensions
+- Helped validate intermediate outputs and summary statistics
+- Contributed to the report writeup and empirical interpretation
+- Assisted with GitHub workflow, project organization, and debugging
+
+---
+
+## Replication goals
+
+The paper studies dividend strip prices inferred from S&P 500 index options and emphasizes the importance of using **option-implied interest rates** rather than exogenous zero-curve rates. Our project reproduces the paper's main empirical objects and then re-runs the same calculations on an updated sample.
+
+Our replication pipeline performs the following steps:
+
+1. Pull raw data from WRDS, FRED, and the Fama-French Data Library
+2. Clean the raw data into tidy intermediate datasets
+3. Estimate option-implied interest rates
+4. Construct dividend strip prices using put-call parity
+5. Build monthly strip and market return panels
+6. Generate final figures, tables, and the LaTeX report
+
+---
+
+## Quick start
+
+### 1. Install LaTeX
+
+You must have **TeX Live** (or another LaTeX distribution) installed and available in your path.
+
+Installers:
+- [Windows](https://tug.org/texlive/windows.html#install)
+- [Mac](https://tug.org/mactex/mactex-download.html)
+
+### 2. Create and activate a virtual environment
+
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate      # On Windows: .venv\Scripts\activate
 ```
-Then install the dependencies:
+
+### 3. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-Finally, run the project tasks:
+### 4. Create a `.env` file
+
+Copy `.env.example` into a new file called `.env` in the project root:
+
 ```bash
-doit
-```
-And that's it!
-
-
-### Other commands
-
-#### Unit Tests and Doc Tests
-
-You can run the unit test, including doctests, with the following command:
-```
-pytest --doctest-modules
+cp .env.example .env
 ```
 
-You can build the documentation with:
+Then edit `.env` with your own settings. A typical file looks like:
+
 ```
-rm ./src/.pytest_cache/README.md
-jupyter-book build -W ./
+WRDS_USERNAME=your_wrds_username
+START_DATE=1996-01-01
+END_DATE=2025-12-31
 ```
-Use `del` instead of rm on Windows
 
+### 5. Run the full pipeline
 
-#### Setting Environment Variables
-
-You can [export your environment variables](https://stackoverflow.com/questions/43267413/how-to-set-environment-variables-from-env-file)
-from your `.env` files like so, if you wish. This can be done easily in a Linux or Mac terminal with the following command:
 ```bash
-set -a  # automatically export all variables
+doit all
+```
+
+This executes the project end-to-end: raw data pulls → cleaning → intermediate calculations → figure and table generation.
+
+### 6. List available tasks
+
+```bash
+doit list
+```
+
+---
+
+## Main PyDoit tasks
+
+| Task | Description |
+|------|-------------|
+| `pull_crsp_spindx` | Pull daily S&P 500 index data from CRSP |
+| `pull_crsp_treasuries` | Pull monthly Treasury returns from CRSP |
+| `pull_fred` | Pull Treasury rates and Fama-French factors |
+| `pull_optionmetrics` | Pull SPX options and zero curve from OptionMetrics |
+| `clean` | Clean and standardize all raw data |
+| `calc_implied_rates` | Estimate option-implied interest rates |
+| `calc_strip_prices` | Construct dividend strip prices |
+| `calc_returns` | Build monthly return panel |
+| `plot_figure1` | Replicate Figure 1 |
+| `plot_figure1_extension` | Extend Figure 1 through 2024 |
+| `figure2` | Replicate Figure 2 |
+| `figure2_extended` | Extend Figure 2 through 2024 |
+| `figure2_extended_winsorized` | Robustness version of extended Figure 2 |
+| `figure3` | Replicate Figure 3 |
+| `figure3_extended` | Extend Figure 3 through 2024 |
+| `table1` | Replicate Table 1 |
+| `table1_extended` | Extend Table 1 through 2024 |
+| `all` | Run the full pipeline end-to-end |
+
+---
+
+## Data sources
+
+| Source | Content |
+|--------|---------|
+| OptionMetrics via WRDS | European SPX options; zero-coupon curve |
+| CRSP via WRDS | Daily S&P 500 index data; monthly Treasury bond returns |
+| FRED | Treasury constant maturity rates |
+| Kenneth French Data Library | Daily and monthly Fama-French factors; 1-month risk-free rate |
+
+---
+
+## Directory structure
+
+```
+src/                  Python scripts for pulling, cleaning, calculating, and plotting
+_data/                Raw, cleaned, and intermediate parquet files (not tracked in Git)
+_data/calc/           Derived datasets (implied rates, strip prices, monthly returns)
+output/               Generated figures and tables
+reports/              LaTeX report source files
+assets/               Static files not generated automatically
+```
+
+### Why `_data/` is not tracked in Git
+
+Most files in `_data/` are either automatically reproducible by rerunning the pipeline, or they come from licensed academic databases (WRDS) and cannot be redistributed.
+
+---
+
+## Naming conventions
+
+| Prefix | Purpose |
+|--------|---------|
+| `pull_*.py` | Pull raw data from an external source |
+| `clean_*.py` | Clean and standardize raw data |
+| `calc_*.py` | Compute derived datasets |
+| `figure*.py` / `table*.py` / `plot_*.py` | Generate final output figures and tables |
+
+---
+
+## Notebook tour
+
+The project includes notebooks that provide a tour of the cleaned data and selected parts of the analysis logic. These notebooks help the reader understand the structure of the data, how the paper's methodology is implemented, and how key replication objects were validated before scripting.
+
+The final official outputs are generated by the Python scripts and the PyDoit pipeline, not by manual notebook execution.
+
+---
+
+## Unit tests
+
+This project uses unit tests to validate key intermediate logic and replicated values, including checks on Figure 1 summary statistics, Table 1 values, Figure 2 terminal values, and Figure 3 holding-period volatility values.
+
+```bash
+pytest                    # Run all tests
+pytest --doctest-modules  # Include doctests
+```
+
+---
+
+## Setting environment variables
+
+If you want to export your `.env` variables into your shell session:
+
+**Linux / Mac:**
+```bash
+set -a
 source .env
 set +a
 ```
-On Windows (PowerShell):
+
+**Windows (PowerShell):**
 ```powershell
-Get-Content .env | ForEach-Object { if ($_ -match '^([^=]+)=(.*)$') { [Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process') } }
+Get-Content .env | ForEach-Object {
+    if ($_ -match '^([^=]+)=(.*)$') {
+        [Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process')
+    }
+}
 ```
 
-### Formatting
+---
 
-This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting Python code.
+## Code formatting
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting:
 
 ```bash
-# Auto-fix linting issues (e.g., unused imports, undefined names)
 ruff check . --fix
-
-# Format code (consistent style, spacing, line length)
 ruff format .
-
-# Sort imports, then fix linting issues, then format
-ruff format . && ruff check --select I --fix . && ruff check --fix .
 ```
 
-- `ruff check --fix` applies safe auto-fixes for linting violations
-- `ruff format` formats code similar to Black
-- `--select I` targets only import sorting rules (isort-compatible)
+---
 
-### General Directory Structure
+## Notes on data limitations
 
- - The `assets` folder is used for things like hand-drawn figures or other
-   pictures that were not generated from code. These things cannot be easily
-   recreated if they are deleted.
+The original paper uses intraday CBOE data for part of the sample. Our replication uses WRDS-accessed OptionMetrics end-of-day data, which leads to some remaining quantitative differences, especially in strip return statistics:
 
- - The `_output` folder, on the other hand, contains dataframes and figures that are
-   generated from code. The entire folder should be able to be deleted, because
-   the code can be run again, which would again generate all of the contents.
+- **Figure 1** is replicated closely
+- **Market return results** are generally close to the paper
+- **Strip return results** are directionally and qualitatively similar, but can differ more in magnitude
+- **Post-2022 strip extensions** become less stable and should be interpreted cautiously
 
- - The `data_manual` is for data that cannot be easily recreated. This data
-   should be version controlled. Anything in the `_data` folder or in
-   the `_output` folder should be able to be recreated by running the code
-   and can safely be deleted.
+These issues are discussed in detail in the report.
 
- - I'm using the `doit` Python module as a task runner. It works like `make` and
-   the associated `Makefile`s. To rerun the code, install `doit`
-   (https://pydoit.org/) and execute the command `doit` from the `src`
-   directory. Note that doit is very flexible and can be used to run code
-   commands from the command prompt, thus making it suitable for projects that
-   use scripts written in multiple different programming languages.
+---
 
- - I'm using the `.env` file as a container for absolute paths that are private
-   to each collaborator in the project. You can also use it for private
-   credentials, if needed. It should not be tracked in Git.
+## Repository hygiene
 
-### Data and Output Storage
+This repository does not contain:
+- Copyrighted raw data
+- API keys or private credentials
+- Committed `.env` files
 
-I'll often use a separate folder for storing data. Any data in the data folder
-can be deleted and recreated by rerunning the PyDoit command (the pulls are in
-the dodo.py file). Any data that cannot be automatically recreated should be
-stored in the "data_manual" folder. Because of the risk of manually-created data
-getting changed or lost, I prefer to keep it under version control if I can.
-Thus, data in the "_data" folder is excluded from Git (see the .gitignore file),
-while the "data_manual" folder is tracked by Git.
-
-Output is stored in the "_output" directory. This includes dataframes, charts, and
-rendered notebooks. When the output is small enough, I'll keep this under
-version control. I like this because I can keep track of how dataframes change as my
-analysis progresses, for example.
-
-Of course, the _data directory and _output directory can be kept elsewhere on the
-machine. To make this easy, I always include the ability to customize these
-locations by defining the path to these directories in environment variables,
-which I intend to be defined in the `.env` file, though they can also simply be
-defined on the command line or elsewhere. The `settings.py` is responsible for
-loading these environment variables and doing some preprocessing on them.
-The `settings.py` file is the entry point for all other scripts to these
-definitions. That is, all code that references these variables and others are
-loaded by importing `config`.
-
-### Naming Conventions
-
- - **`pull_` vs `load_`**: Files or functions that pull data from an external
- data source are prepended with "pull_", as in "pull_fred.py". Functions that
- load data that has been cached in the "_data" folder are prepended with "load_".
- For example, inside of the `pull_CRSP_Compustat.py` file there is both a
- `pull_compustat` function and a `load_compustat` function. The first pulls from
- the web, whereas the other loads cached data from the "_data" directory.
-
-
-### Dependencies and Virtual Environments
-
-#### Working with `pip` requirements
-
-This project uses `pip` with a virtual environment. Install requirements with:
-```bash
-pip install -r requirements.txt
-```
-
-To update the requirements file after adding new packages:
-```bash
-pip freeze > requirements.txt
-```
-
+Use `.env.example` as the template for your local `.env` file.
