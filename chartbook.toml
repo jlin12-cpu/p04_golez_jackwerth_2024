@@ -1,0 +1,309 @@
+[config]
+type = "pipeline"
+chartbook_format_version = "0.0.2"
+
+[site]
+title = "Holding Period Effects in Dividend Strip Returns"
+author = "Jie Lin and Zimeng Yi"
+copyright = "2026"
+logo_path = ""
+favicon_path = ""
+
+[pipeline]
+id = "P04"
+pipeline_name = "Holding Period Effects in Dividend Strip Returns"
+pipeline_description = "End-to-end replication of Golez and Jackwerth (2024), including Table 1 and Figures 1–3, with automated sample extensions through 2024."
+lead_pipeline_developer = "Jie Lin and Zimeng Yi"
+contributors = ["Jie Lin", "Zimeng Yi"]
+software_modules_command = "module load anaconda3/3.11.4 TeXLive/2023"
+runs_on_grid_or_windows_or_other = "Windows/Linux/macOS"
+git_repo_URL = ""
+README_file_path = "./README.md"
+
+# =============================================================================
+# NOTEBOOKS
+# =============================================================================
+
+[notebooks]
+
+[notebooks.data_exploration]
+notebook_name = "Data Exploration"
+notebook_description = "Exploratory notebook used in the early phase of the project to inspect raw SPX options, CRSP index data, Treasury data, and general data coverage before building the automated replication pipeline."
+notebook_path = "src/SPX_index_options_graph_revised.ipynb"
+
+[notebooks.figure2_diagnostics]
+notebook_name = "Figure 2 Diagnostics"
+notebook_description = "Notebook used to validate cumulative return construction logic and compare replicated Figure 2 series with author-provided benchmark data."
+notebook_path = "src/figure2.ipynb"
+
+[notebooks.figure3_diagnostics]
+notebook_name = "Figure 3 Diagnostics"
+notebook_description = "Notebook used to validate holding-period volatility calculations before finalizing the automated Figure 3 script."
+notebook_path = "src/figure3.ipynb"
+
+# =============================================================================
+# DATAFRAMES — RAW DATA
+# =============================================================================
+
+[dataframes]
+
+[dataframes.crsp_sp500_daily]
+name = "CRSP S&P 500 Daily Data"
+path_to_parquet_data = "_data/crsp_sp500_daily.parquet"
+date_col = "date"
+short_description = "Daily S&P 500 index data from CRSP including index levels and return series."
+dataframe_docs_str = "Raw daily S&P 500 index data from CRSP. Includes the index level (spindx), S&P 500 return (sprtrn), value-weighted return including dividends (vwretd), and value-weighted return excluding dividends (vwretx). This file is used both for market return construction and for the monthly dividend proxy used in strip return calculations."
+data_sources = ["CRSP"]
+data_providers = ["WRDS"]
+how_is_pulled = "Downloaded via wrds-python from the crsp.dsi table using pull_crsp_spindx_level.py."
+
+[dataframes.crsp_treasury_returns]
+name = "CRSP Treasury Returns"
+path_to_parquet_data = "_data/crsp_treasury_returns.parquet"
+date_col = "date"
+short_description = "Monthly returns on 2-year and 10-year constant maturity Treasury bonds."
+dataframe_docs_str = "Monthly Treasury bond total returns from CRSP. Includes 2-year and 10-year fixed maturity Treasury return series used for excess return comparisons in Table 1 and Figures 2–3."
+data_sources = ["CRSP"]
+data_providers = ["WRDS"]
+how_is_pulled = "Downloaded via wrds-python from the crsp.mcti table using pull_crsp_treasuries.py."
+
+[dataframes.fred_treasury_rates]
+name = "Treasury Rates and Risk-Free Series"
+path_to_parquet_data = "_data/fred_treasury_rates.parquet"
+date_col = "date"
+short_description = "Daily Treasury rates combined with a daily 1-month risk-free proxy."
+dataframe_docs_str = "Daily Treasury rate dataset combining the 1-month T-bill proxy from the Fama-French data library and 1-year, 2-year, and 10-year constant maturity Treasury rates from FRED. Used in Figure 1 and in intermediate cleaning steps."
+data_sources = ["FRED", "Fama-French Data Library"]
+data_providers = ["Federal Reserve", "Kenneth French"]
+how_is_pulled = "Downloaded using pandas_datareader in pull_fred.py."
+
+[dataframes.fama_french_factors]
+name = "Fama-French Daily Factors"
+path_to_parquet_data = "_data/fama_french_factors.parquet"
+date_col = "date"
+short_description = "Daily Fama-French three factors plus the risk-free rate."
+dataframe_docs_str = "Daily Fama-French three-factor data in decimal form. Includes Mkt-RF, SMB, HML, and RF. Primarily used for documentation and cross-checking the risk-free series."
+data_sources = ["Fama-French Data Library"]
+data_providers = ["Kenneth French"]
+how_is_pulled = "Downloaded using pandas_datareader in pull_fred.py."
+
+[dataframes.fama_french_monthly]
+name = "Fama-French Monthly Factors"
+path_to_parquet_data = "_data/fama_french_monthly.parquet"
+date_col = "date"
+short_description = "Monthly Fama-French factors including the 1-month risk-free rate."
+dataframe_docs_str = "Monthly Fama-French factor data in decimal form. The 1-month risk-free rate from this file is used in Table 1 and in Figures 2–3 when constructing excess returns over the risk-free rate."
+data_sources = ["Fama-French Data Library"]
+data_providers = ["Kenneth French"]
+how_is_pulled = "Downloaded using pandas_datareader in pull_fred.py."
+
+[dataframes.optionmetrics_spx_raw]
+name = "OptionMetrics SPX Raw Options"
+path_to_parquet_data = "_data/optionmetrics_spx_raw.parquet"
+date_col = "date"
+short_description = "Raw SPX options pulled from OptionMetrics before month-end filtering."
+dataframe_docs_str = "Raw SPX options data pulled year-by-year from OptionMetrics IvyDB through WRDS. Includes European calls and puts on the S&P 500 index, bid/ask quotes, strike prices, implied volatility, Greeks, and maturity information."
+data_sources = ["OptionMetrics IvyDB"]
+data_providers = ["WRDS"]
+how_is_pulled = "Downloaded year-by-year using pull_spx_options_and_zero_coupon.py."
+
+[dataframes.optionmetrics_spx_monthly]
+name = "OptionMetrics SPX Month-End Options"
+path_to_parquet_data = "_data/optionmetrics_spx_monthly.parquet"
+date_col = "date"
+short_description = "Month-end SPX options used for strip and implied-rate estimation."
+dataframe_docs_str = "SPX options filtered to the last trading day of each month. This is the main raw options input used in the cleaning step and ultimately in implied-rate and strip-price estimation."
+data_sources = ["OptionMetrics IvyDB"]
+data_providers = ["WRDS"]
+how_is_pulled = "Constructed in pull_spx_options_and_zero_coupon.py by filtering raw SPX options to the month-end date within each calendar month."
+
+[dataframes.optionmetrics_zero_curve]
+name = "OptionMetrics Zero Curve"
+path_to_parquet_data = "_data/optionmetrics_zero_curve.parquet"
+date_col = "date"
+short_description = "Daily zero-coupon curve from OptionMetrics."
+dataframe_docs_str = "Daily zero-coupon term structure from OptionMetrics, with maturity in days and associated continuously compounded rates. Used as the zero-curve benchmark in Figure 1."
+data_sources = ["OptionMetrics IvyDB"]
+data_providers = ["WRDS"]
+how_is_pulled = "Downloaded from optionm.zerocd via WRDS using pull_spx_options_and_zero_coupon.py."
+
+# =============================================================================
+# DATAFRAMES — CLEANED DATA
+# =============================================================================
+
+[dataframes.clean_options]
+name = "Cleaned SPX Options"
+path_to_parquet_data = "_data/clean_options.parquet"
+date_col = "date"
+short_description = "Analysis-ready SPX options with merged index level and filtering applied."
+dataframe_docs_str = "Cleaned SPX options dataset used for implied-rate and strip-price estimation. Adds the S&P 500 index level, applies minimum bid and ask filters, enforces a minimum maturity of 90 days, and restricts moneyness to the interval [0.5, 1.5]."
+data_sources = ["Derived from optionmetrics_spx_monthly and crsp_sp500_daily"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by clean_data.py."
+
+[dataframes.clean_zero_curve]
+name = "Cleaned Zero Curve"
+path_to_parquet_data = "_data/clean_zero_curve.parquet"
+date_col = "date"
+short_description = "Cleaned zero curve with decimal rates and maturity in years."
+dataframe_docs_str = "Cleaned version of the OptionMetrics zero curve. Converts rates from percent to decimal form and adds tau = days / 365 for interpolation."
+data_sources = ["Derived from optionmetrics_zero_curve"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by clean_data.py."
+
+[dataframes.clean_rates]
+name = "Cleaned Treasury Rates"
+path_to_parquet_data = "_data/clean_rates.parquet"
+date_col = "date"
+short_description = "Treasury rate panel converted into continuously compounded form where needed."
+dataframe_docs_str = "Cleaned Treasury rate panel used in Figure 1. Converts Treasury APRs into continuously compounded rates using log(1+r), while keeping the monthly risk-free proxy consistent with project conventions."
+data_sources = ["Derived from fred_treasury_rates"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by clean_data.py."
+
+[dataframes.clean_crsp_sp500_monthly]
+name = "Monthly CRSP S&P 500 Panel"
+path_to_parquet_data = "_data/clean_crsp_sp500_monthly.parquet"
+date_col = "date"
+short_description = "Monthly market return and dividend proxy panel derived from daily CRSP data."
+dataframe_docs_str = "Monthly panel derived from daily CRSP index data. Contains the month-end index level, a monthly market log return series, and an implied monthly dividend proxy constructed from total and ex-dividend return differences."
+data_sources = ["Derived from crsp_sp500_daily"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by clean_data.py."
+
+# =============================================================================
+# DATAFRAMES — CALCULATED / INTERMEDIATE DATA
+# =============================================================================
+
+[dataframes.implied_rates]
+name = "Option-Implied Rates by Maturity"
+path_to_parquet_data = "_data/calc/implied_rates.parquet"
+date_col = "date"
+short_description = "Option-implied interest rates estimated for all available date-maturity combinations."
+dataframe_docs_str = "Calculated option-implied rates from SPX options using the outer product approach for 1996–2003 and the regression approach for 2004 onward. Contains all date-exdate combinations before interpolation to constant maturity."
+data_sources = ["Derived from clean_options"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by calc_implied_rates.py."
+
+[dataframes.implied_rates_1y]
+name = "1-Year Option-Implied Rate"
+path_to_parquet_data = "_data/calc/implied_rates_1y.parquet"
+date_col = "date"
+short_description = "Monthly 1-year constant maturity option-implied interest rate."
+dataframe_docs_str = "Monthly 1-year constant maturity option-implied interest rate obtained by interpolating across maturities within the full implied-rate panel. Used in Figure 1."
+data_sources = ["Derived from implied_rates"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by calc_implied_rates.py."
+
+[dataframes.zero_curve_1y]
+name = "1-Year Zero Curve Rate"
+path_to_parquet_data = "_data/calc/zero_curve_1y.parquet"
+date_col = "date"
+short_description = "Monthly 1-year constant maturity zero-curve benchmark."
+dataframe_docs_str = "Monthly 1-year constant maturity zero-curve benchmark obtained by interpolating the cleaned OptionMetrics zero curve and filtering to month-end observations."
+data_sources = ["Derived from clean_zero_curve"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by calc_implied_rates.py."
+
+[dataframes.strip_prices]
+name = "Target Strip Prices"
+path_to_parquet_data = "_data/calc/strip_prices.parquet"
+date_col = "date"
+short_description = "Target dividend strip price for each month under the paper's rolling strategy."
+dataframe_docs_str = "Target strip-price series used in return construction. For each month, the pipeline selects the paper-style target expiration date and estimates one strip price using put-call parity and the option-implied interest rate."
+data_sources = ["Derived from clean_options and implied_rates"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by calc_strip_prices.py."
+
+[dataframes.all_strip_prices]
+name = "All Strip Prices"
+path_to_parquet_data = "_data/calc/all_strip_prices.parquet"
+date_col = "date"
+short_description = "Strip prices for all available date-expiration combinations."
+dataframe_docs_str = "Comprehensive panel of strip prices for all date-exdate combinations. Used to look up the current value of the previously selected strip when calculating holding-period returns."
+data_sources = ["Derived from clean_options and implied_rates"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by calc_strip_prices.py."
+
+[dataframes.monthly_returns]
+name = "Monthly Returns Panel"
+path_to_parquet_data = "_data/calc/monthly_returns.parquet"
+date_col = "date"
+short_description = "Final monthly return panel for dividend strips and the market."
+dataframe_docs_str = "Key derived panel used for Table 1 and Figures 2–3. Contains strip and market log returns, the monthly risk-free rate, Treasury return adjustments, and excess-return variants under both risk-free and Treasury benchmarks."
+data_sources = ["Derived from strip_prices, all_strip_prices, clean_crsp_sp500_monthly, fama_french_monthly, and crsp_treasury_returns"]
+data_providers = ["Internal pipeline"]
+how_is_pulled = "Constructed by calc_returns.py."
+
+# =============================================================================
+# CHARTS / FIGURES
+# =============================================================================
+
+[charts]
+
+[charts.figure1]
+chart_name = "Figure 1: 12-Month Interest Rates"
+short_description_chart = "Replication of Figure 1 comparing option-implied rates, zero curve rates, and Treasury rates over 1996-2022."
+chart_docs_str = "This figure reproduces the paper's comparison of the option-implied rate, the OptionMetrics zero-curve rate, and the 1-year constant maturity Treasury rate over the paper sample."
+dataframe_id = "implied_rates_1y"
+path_to_html_chart = "output/figure1/figure1.png"
+
+[charts.figure1_extension]
+chart_name = "Figure 1 Extension"
+short_description_chart = "Extension of Figure 1 through 2024."
+chart_docs_str = "This figure extends the Figure 1 analysis through 2024 and is accompanied by diagnostic and robustness outputs for the post-2022 period."
+dataframe_id = "implied_rates_1y"
+path_to_html_chart = "output/figure1_extension/figure1_extension.png"
+
+[charts.figure2]
+chart_name = "Figure 2: Cumulative Returns"
+short_description_chart = "Replication of Figure 2 showing cumulative strip and market returns over 1996-2022."
+chart_docs_str = "This figure plots cumulative wealth indices for a $1 investment in the strip and in the market under raw, risk-free excess, and Treasury excess definitions."
+dataframe_id = "monthly_returns"
+path_to_html_chart = "output/figure2/figure2.png"
+
+[charts.figure2_extension]
+chart_name = "Figure 2 Extension"
+short_description_chart = "Extension of cumulative strip and market return paths through 2024."
+chart_docs_str = "This figure extends the cumulative-return analysis beyond the paper sample using the automated pipeline's monthly return series."
+dataframe_id = "monthly_returns"
+path_to_html_chart = "output/figure2_extended/figure2_extended.png"
+
+[charts.figure2_extension_winsorized]
+chart_name = "Figure 2 Extension (Winsorized)"
+short_description_chart = "Robustness version of the extended cumulative return figure with post-2022 strip return winsorization."
+chart_docs_str = "This robustness figure caps extreme post-2022 strip returns to reduce the influence of late-sample outliers caused by unstable strip-price estimates."
+dataframe_id = "monthly_returns"
+path_to_html_chart = "output/figure2_extended_winsorized/figure2_extended_winsorized.png"
+
+[charts.figure3]
+chart_name = "Figure 3: Volatility Across Holding Periods"
+short_description_chart = "Replication of Figure 3 showing annualized volatility across holding periods from 1 to 36 months."
+chart_docs_str = "This figure shows how annualized volatility changes with holding period for the strip and the market, under both risk-free and Treasury excess return definitions."
+dataframe_id = "monthly_returns"
+path_to_html_chart = "output/figure3/figure3.png"
+
+[charts.figure3_extension]
+chart_name = "Figure 3 Extension"
+short_description_chart = "Extension of the holding-period volatility analysis through 2024."
+chart_docs_str = "This figure extends the Figure 3 analysis through 2024 and highlights the increased instability of strip volatility in the post-2022 sample."
+dataframe_id = "monthly_returns"
+path_to_html_chart = "output/figure3_extended/figure3_extended.png"
+
+# =============================================================================
+# TABLES
+# =============================================================================
+
+[tables]
+
+[tables.table1]
+table_name = "Table 1: Monthly Return Summary Statistics"
+short_description_table = "Replication of the paper's main monthly return summary statistics table for 1996-2022."
+table_docs_str = "This table reports annualized means, standard deviations, Sharpe ratios, and autocorrelations for market and strip returns under raw and excess-return definitions."
+path_to_output_table = "output/table1.tex"
+
+[tables.table1_extended]
+table_name = "Table 1 Extension"
+short_description_table = "Extension of Table 1 through 2024."
+table_docs_str = "This table extends the monthly return summary statistics through 2024 and highlights the instability of late-sample strip return estimates."
+path_to_output_table = "output/table1_extended.tex"
