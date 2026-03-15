@@ -10,11 +10,12 @@ Run a specific task:
 List all tasks:
     doit list
 
-The pipeline is organized into four layers:
-    1. Pull   : fetch raw data from WRDS / FRED / Kenneth French
-    2. Clean  : standardize and tidy raw data
-    3. Calc   : compute implied rates, strip prices, and returns
-    4. Output : produce figures and tables
+The pipeline is organized into five layers:
+    1. Pull    : fetch raw data from WRDS / FRED / Kenneth French
+    2. Clean   : standardize and tidy raw data
+    3. Calc    : compute implied rates, strip prices, and returns
+    4. Output  : produce figures and tables
+    5. Report  : generate LaTeX tables, run tests, compile PDF
 """
 
 from pathlib import Path
@@ -23,10 +24,11 @@ from pathlib import Path
 # Paths
 # =============================================================================
 
-SRC = Path("src")
-DATA = Path("_data")
-CALC = DATA / "calc"
-OUT = Path("output")
+SRC     = Path("src")
+DATA    = Path("_data")
+CALC    = DATA / "calc"
+OUT     = Path("output")
+REPORTS = Path("reports")
 
 
 # =============================================================================
@@ -206,9 +208,25 @@ def task_plot_figure1():
             OUT / "figure1/figure1.png",
             OUT / "figure1/figure1_series.csv",
             OUT / "figure1/figure1_summary.csv",
-            OUT / "figure1/figure1_summary.tex",
         ],
         "task_dep": ["calc_implied_rates"],
+        "verbosity": 2,
+    }
+
+
+def task_plot_figure1_summary_stats():
+    """Generate Figure 1 descriptive statistics table and implied-zero spread chart."""
+    return {
+        "actions": [f"python {SRC / 'plot_figure1_summary_stats.py'}"],
+        "file_dep": [
+            OUT / "figure1/figure1_series.csv",
+        ],
+        "targets": [
+            OUT / "figure1_summary_stats/figure1_summary_stats_table.csv",
+            OUT / "figure1_summary_stats/figure1_summary_stats_table.tex",
+            OUT / "figure1_summary_stats/figure1_implied_zero_spread.png",
+        ],
+        "task_dep": ["plot_figure1"],
         "verbosity": 2,
     }
 
@@ -228,7 +246,6 @@ def task_plot_figure1_extension():
             OUT / "figure1_extension/figure1_extension_robustness.csv",
             OUT / "figure1_extension/figure1_extension_series.csv",
             OUT / "figure1_extension/figure1_extension_summary.csv",
-            OUT / "figure1_extension/figure1_extension_summary.tex",
         ],
         "task_dep": ["calc_implied_rates"],
         "verbosity": 2,
@@ -349,15 +366,139 @@ def task_table1_extended():
 
 
 # =============================================================================
+# Layer 5: Report — generate LaTeX tables
+# =============================================================================
+
+def task_generate_latex_tables():
+    """
+    Convert summary CSV files to LaTeX .tex files for \input{} in report.
+
+    Depends on:
+        output/figure1/figure1_summary.csv
+        output/figure1_extension/figure1_extension_summary.csv
+
+    Produces:
+        output/figure1/figure1_summary.tex
+        output/figure1_extension/figure1_extension_summary.tex
+    """
+    return {
+        "actions": [f"python {SRC / 'generate_latex_tables.py'}"],
+        "file_dep": [
+            OUT / "figure1/figure1_summary.csv",
+            OUT / "figure1_extension/figure1_extension_summary.csv",
+        ],
+        "targets": [
+            OUT / "figure1/figure1_summary.tex",
+            OUT / "figure1_extension/figure1_extension_summary.tex",
+        ],
+        "task_dep": [
+            "plot_figure1",
+            "plot_figure1_extension",
+        ],
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
+# Layer 5: Report — run tests
+# =============================================================================
+
+def task_run_tests():
+    """
+    Run all pytest unit tests in src/.
+
+    Tests cover:
+        - clean_data.py          (test_clean_data.py)
+        - calc_implied_rates.py  (test_figure1.py)
+        - table1.py              (test_table1.py)
+        - figure2.py             (test_figure2.py)
+        - figure3.py             (test_figure3.py)
+
+    All output files produced by earlier tasks must exist before tests run,
+    since Layer 3 tests load parquet / CSV files from output/.
+    """
+    return {
+        "actions": ["pytest src/ -v --tb=short"],
+        "task_dep": [
+            "clean_data",
+            "plot_figure1",
+            "plot_figure1_summary_stats",
+            "figure2",
+            "figure3",
+            "table1",
+            "generate_latex_tables",
+        ],
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
+# Layer 5: Report — compile PDF
+# =============================================================================
+
+def task_compile_report():
+    """
+    Compile reports/report.tex to PDF using latexmk.
+
+    Runs latexmk twice to resolve cross-references and bibliography.
+    The PDF is written to reports/report.pdf.
+
+    All \input{} and \includegraphics{} dependencies must be produced
+    before this task runs.
+    """
+    return {
+        "actions": [
+            # Run latexmk from within the reports directory so that
+            # relative paths (\PathToOutput = ../output) resolve correctly.
+            "cd reports && latexmk -pdf -interaction=nonstopmode report.tex",
+        ],
+        "file_dep": [
+            REPORTS / "report.tex",
+            # LaTeX table inputs
+            OUT / "figure1/figure1_summary.tex",
+            OUT / "figure1_extension/figure1_extension_summary.tex",
+            OUT / "figure1_summary_stats/figure1_summary_stats_table.tex",
+            OUT / "table1.tex",
+            OUT / "table1_extended.tex",
+            # Figures
+            OUT / "figure1/figure1.png",
+            OUT / "figure1_summary_stats/figure1_implied_zero_spread.png",
+            OUT / "figure1_extension/figure1_extension.png",
+            OUT / "figure2/figure2.png",
+            OUT / "figure2_extended_winsorized/figure2_extended_winsorized.png",
+            OUT / "figure3/figure3.png",
+            OUT / "figure3_extended/figure3_extended.png",
+        ],
+        "targets": [
+            REPORTS / "report.pdf",
+        ],
+        "task_dep": [
+            "plot_figure1",
+            "plot_figure1_summary_stats",
+            "plot_figure1_extension",
+            "figure2",
+            "figure2_extended_winsorized",
+            "figure3",
+            "figure3_extended",
+            "table1",
+            "table1_extended",
+            "generate_latex_tables",
+        ],
+        "verbosity": 2,
+    }
+
+
+# =============================================================================
 # Full pipeline
 # =============================================================================
 
 def task_all():
-    """Run the full replication pipeline."""
+    """Run the full replication pipeline including tests and report compilation."""
     return {
         "actions": None,
         "task_dep": [
             "plot_figure1",
+            "plot_figure1_summary_stats",
             "plot_figure1_extension",
             "figure2",
             "figure2_extended",
@@ -366,5 +507,8 @@ def task_all():
             "figure3_extended",
             "table1",
             "table1_extended",
+            "generate_latex_tables",
+            "run_tests",
+            "compile_report",
         ],
     }

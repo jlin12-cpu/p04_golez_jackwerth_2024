@@ -239,7 +239,7 @@ def plot_figure1_extension(df_all):
         dpi=150,
         bbox_inches='tight'
     )
-    plt.show()
+    plt.close()
     print("\nSaved to output/figure1_extension.png")
 
 

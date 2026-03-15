@@ -162,7 +162,7 @@ def plot_implied_zero_spread(df):
         dpi=150,
         bbox_inches="tight"
     )
-    plt.show()
+    plt.close()
     print(f"Saved {OUTPUT_DIR / 'figure1_implied_zero_spread.png'}")
 
 

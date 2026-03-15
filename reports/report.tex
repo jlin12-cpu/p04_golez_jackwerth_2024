@@ -22,12 +22,14 @@ Jie Lin and Zimeng Yi\footnote{University of Chicago}
 
 \doublespacing
 \begin{abstract}
-We replicate Figure 1, Figure 2, and Table 1 from \cite{golez2024holding}.
+We replicate Figure 1, Figure 2, Figure 3, and Table 1 from \cite{golez2024holding}.
 Figure 1 plots 12-month maturity interest rates from three sources:
 option-implied rates derived from S\&P 500 index options,
 zero curve rates from OptionMetrics, and constant maturity Treasury rates from FRED.
 Figure 2 plots cumulative wealth indices for a \$1 investment in the dividend strip
 and the market from January 1996 through December 2022.
+Figure 3 plots the annualized standard deviation of excess returns
+across holding periods of 1 to 36 months.
 Table 1 reports annualized summary statistics for monthly dividend strip returns
 and market returns over the period 1996--2022.
 Following the paper's core methodology, we estimate option-implied interest rates
@@ -39,14 +41,21 @@ versus 7 basis points reported in the paper.
 For Figure 2, our replicated market terminal values are reasonably close to the paper
 across all three panels, while strip terminal values are materially higher,
 consistent with the higher mean strip return documented in Table 1.
+For Figure 3, the market-side volatility profile closely matches the paper,
+and the qualitative pattern of strip volatility declining sharply with holding period
+and converging below market volatility at long horizons is preserved,
+directly corroborating the paper's measurement-error interpretation.
 For Table 1, our replicated market return statistics are close to the paper,
 while strip return statistics show somewhat larger deviations,
 likely due to differences between our automated CRSP-based dividend construction
 and the paper's Datastream-based implementation.
 We extend all results through 2024 and find that the option-implied rate
 becomes lower than the zero curve rate on average in the post-2022 period.
-For the extended version of Table 1, market return moments remain broadly stable,
-whereas strip return moments become much more extreme in 2023--2024.
+For the extended versions of Table 1 and Figure 3, market return moments
+and market-side volatility remain broadly stable,
+whereas strip return moments and strip-side volatility become much more extreme
+in 2023--2024, with the holding-period volatility decline shallower and
+strip volatility remaining above market volatility even at a 36-month horizon.
 We interpret the latter pattern as likely reflecting increased sensitivity
 of strip-price construction to end-of-day option quotes during a period
 of unusually large interest rate movements.
@@ -77,6 +86,16 @@ in the dividend strip and the market from January 1996 through December 2022,
 across three panels corresponding to raw returns, returns in excess of the
 risk-free rate, and returns in excess of duration-matched Treasury bond returns.
 
+Figure 3 of the paper plots the annualized standard deviation of excess
+returns across holding periods of 1 to 36 months, separately for
+the dividend strip and the market.
+The key finding is that strip volatility drops sharply from approximately 32\%
+at the monthly horizon to approximately 12\% at the 3-year horizon,
+while market volatility remains broadly flat around 15--18\%.
+This pattern is interpreted as evidence of measurement error in strip prices
+estimated from options data, which induces strong negative serial correlation
+in monthly strip returns but dissipates at longer holding periods.
+
 Table 1 of the paper reports annualized summary statistics for monthly
 dividend strip returns and market returns, including raw returns,
 returns in excess of the risk-free rate, and returns in excess of
@@ -87,7 +106,7 @@ despite much higher short-horizon return volatility.
 The strong negative autocorrelation of strip returns is interpreted
 as evidence of measurement error in strip prices estimated from options data.
 
-In this replication, we reproduce Figure 1, Figure 2, and Table 1
+In this replication, we reproduce Figure 1, Figure 2, Figure 3, and Table 1
 using WRDS-accessed OptionMetrics and CRSP data together with
 Treasury rate data from FRED and Kenneth French's data library.
 Because this course project emphasizes an end-to-end reproducible analytical pipeline,
@@ -324,7 +343,7 @@ Datastream/CBOE-based construction.
 
 \subsection{Table 1 Replication}
 
-Table 1 replicates Table 1 from \cite{golez2024holding},
+Table \ref{table:table1} replicates Table 1 from \cite{golez2024holding},
 reporting annualized summary statistics for monthly dividend strip returns
 and market returns over the period 1996--2022.
 
@@ -345,6 +364,52 @@ The somewhat higher mean strip return and standard deviation in our replication
 our automated CRSP-based dividend construction and the paper's Datastream-based implementation.
 
 \input{\PathToOutput/table1.tex}
+\label{table:table1}
+
+\subsection{Figure 3 Replication}
+
+Figure~\ref{fig:figure3} replicates Figure~3 from \cite{golez2024holding},
+plotting the annualized standard deviation of excess returns across holding
+periods $h \in \{1, 6, 12, 18, 24, 30, 36\}$ months.
+Panel~A shows returns in excess of the risk-free rate;
+Panel~B shows returns in excess of duration-matched Treasury bond returns.
+
+The market-side volatility profile closely matches the paper.
+Market-rf annualized standard deviation ranges from approximately 16\%
+at $h=1$ to 17\% at $h=36$ in our replication, consistent with the
+paper's broadly flat profile around 15--18\%.
+
+The strip-side pattern is qualitatively consistent with the paper
+but at a higher overall level.
+Strip-rf annualized standard deviation falls from 40.5\% at $h=1$
+to 12.7\% at $h=36$ in our replication, versus approximately 32\%
+to 12\% in the paper.
+The sharp decline and the convergence below market volatility at long
+holding periods are both preserved, directly corroborating the paper's
+central argument that high short-horizon strip volatility is driven by
+measurement error that dissipates as the holding period lengthens.
+The elevated starting level at $h=1$ is consistent with the higher
+strip return volatility documented in Table~1 and reflects the same
+data source difference noted there.
+
+\begin{figure}[h]
+\centering
+\caption{Annualized Standard Deviation Across Holding Periods (1996--2022)}
+\includegraphics[width=0.95\linewidth]{\PathToOutput/figure3/figure3.png}
+\caption*{
+This figure replicates Figure~3 from \cite{golez2024holding} and plots
+the annualized standard deviation of excess returns for holding periods
+of 1, 6, 12, 18, 24, 30, and 36 months.
+Panel~A shows returns in excess of the 1-month T-bill rate.
+Panel~B shows returns in excess of duration-matched Treasury bond returns
+(2-year for the strip, 10-year for the market).
+For each holding period $h$, overlapping $h$-period log returns are formed
+by summing $h$ consecutive monthly log returns, and the annualized standard
+deviation is computed as $\hat{\sigma}_h / \sqrt{h} \times \sqrt{12}$.
+The period is January 1996 through December 2022.
+}
+\label{fig:figure3}
+\end{figure}
 
 \subsection{Extension: Updated Sample Through 2024}
 
@@ -402,7 +467,8 @@ still substantially outperforms the market in the extended sample, suggesting
 that late-sample strip estimates remain unstable and should be interpreted
 with caution.
 For readability, we report the winsorized robustness version in the main text,
-since the raw extended strip series is dominated by a small number of extreme late-sample observations.
+since the raw extended strip series is dominated by a small number of extreme
+late-sample observations.
 
 \begin{figure}[h]
 \centering
@@ -439,9 +505,61 @@ We therefore view the extended strip results as exploratory rather than fully st
 
 \input{\PathToOutput/table1_extended.tex}
 
+\subsubsection{Figure 3 Extension}
+
+Figure~\ref{fig:figure3_extended} extends Figure~3 through 2024.
+The market-side volatility profile remains broadly stable in the extended
+sample, with market-rf standard deviation ranging from approximately
+16\% at $h=1$ to 16\% at $h=36$, consistent with the paper sample.
+
+The strip-side volatility profile changes substantially.
+Strip-rf annualized standard deviation rises to 66.5\% at $h=1$
+in the extended sample (versus 40.5\% in the paper sample),
+and even at $h=36$ remains at approximately 29\%
+(versus 12.7\% in the paper sample).
+Importantly, the rate of decline across holding periods is also
+shallower in the extended sample: the strip volatility curve does not
+converge below market volatility at any holding period up to 36 months,
+in contrast to the paper sample where convergence occurs by $h=24$.
+
+This pattern provides evidence that is complementary to the extended
+Figure~2 results.
+Whereas Figure~2 documents extreme cumulative strip returns in the
+post-2022 period, Figure~3 shows that the distortion is not confined to
+a small number of isolated outliers driving cumulative compounding.
+The holding-period volatility profile itself is structurally elevated,
+indicating that the late-sample noise is both larger and more persistent
+than the measurement error documented in the original paper.
+This is consistent with systematic put-call parity violations in
+OptionMetrics end-of-day data during a period of unusually large
+interest rate movements, rather than the random pricing noise that the
+paper's methodology is designed to handle.
+
+\begin{figure}[h]
+\centering
+\caption{Annualized Standard Deviation Across Holding Periods
+         (1996--2024, Extended Sample)}
+\includegraphics[width=0.95\linewidth]{\PathToOutput/figure3_extended/figure3_extended.png}
+\caption*{
+This figure extends Figure~3 through 2024.
+Panel~A shows returns in excess of the 1-month T-bill rate;
+Panel~B shows returns in excess of Treasury bond returns.
+Market-side volatility remains broadly stable relative to the paper sample.
+Strip-side volatility is materially elevated at all holding periods,
+and the holding-period decline is shallower than in the paper sample,
+with strip standard deviation remaining above market standard deviation
+even at $h=36$.
+This indicates that post-2022 strip noise is more persistent than
+the measurement error in the original paper sample, consistent with
+systematic put-call parity violations in OptionMetrics end-of-day data
+during a period of unusually large interest rate movements.
+}
+\label{fig:figure3_extended}
+\end{figure}
+
 \section{Conclusion}
 
-We replicate Figure 1, Figure 2, and Table 1 from \cite{golez2024holding}
+We replicate Figure 1, Figure 2, Figure 3, and Table 1 from \cite{golez2024holding}
 using OptionMetrics end-of-day data together with CRSP and FRED data.
 Our Figure 1 results are numerically close to the published values,
 with remaining differences likely attributable to differences between
@@ -451,6 +569,14 @@ Figure 2 cumulative return patterns are qualitatively consistent with the paper,
 with market terminal values closely matching the published figure across all three panels.
 Strip terminal values are higher in our replication, consistent with the
 higher mean strip return in Table 1 and attributable to the same data source difference.
+
+For Figure 3, the market-side volatility profile closely matches the paper.
+The strip volatility curve is elevated at short horizons relative to the paper,
+consistent with the higher strip return variance documented in Table 1,
+but the qualitative pattern of a sharp decline and convergence below market
+volatility at long holding periods is fully preserved.
+This directly corroborates the paper's central argument that measurement error
+in option-derived strip prices dissipates as the holding period lengthens.
 
 For Table 1, our market return statistics are close to the paper,
 while strip return statistics show somewhat larger deviations.
@@ -463,15 +589,19 @@ is 0.18, compared with 0.16 in the paper.
 The extension through 2024 shows that the option-implied rate becomes lower than
 the zero curve rate on average in the post-2022 period,
 while the strip-return extension becomes much less stable.
-Market return moments remain broadly similar in the extended sample,
-but strip return moments are heavily influenced by several extreme observations
-in 2023--2024.
-A winsorized robustness check confirms that the explosive late-sample strip behavior
-is driven largely by a small number of extreme monthly observations, although the
-extended strip series remains considerably less stable than the market series.
-Overall, the extension suggests that the paper's interest-rate finding may not be stable
-in recent years, while the extension of strip returns is more sensitive
-to the practical details of options-based strip construction.
+Market return moments and market-side volatility remain broadly similar
+in the extended sample, but strip return moments and the strip-side
+holding-period volatility profile are heavily distorted by the post-2022 period.
+The extended Figure~3 is particularly informative: unlike Figure~2, where
+the explosive strip cumulative path could in principle be driven by a small
+number of extreme outliers, the elevated holding-period volatility structure in
+Figure~3 confirms that the instability is structural rather than isolated.
+A winsorized robustness check for Figure~2 confirms that extreme monthly
+observations play a key role, but the Figure~3 evidence indicates that the
+underlying strip series is broadly unstable in the post-2022 period.
+Overall, the extension suggests that the paper's interest-rate finding may
+not be stable in recent years, while the extension of strip returns is more
+sensitive to the practical details of options-based strip construction.
 
 \newpage
 \bibliographystyle{jpe}

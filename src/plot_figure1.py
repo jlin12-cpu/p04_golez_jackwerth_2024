@@ -134,7 +134,7 @@ def plot_figure1(df_all):
 
     plt.tight_layout()
     plt.savefig(OUTPUT_DIR / "figure1.png", dpi=150, bbox_inches='tight')
-    plt.show()
+    plt.close()
     print(f"\nSaved to output/figure1.png")
 
 
