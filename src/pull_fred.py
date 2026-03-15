@@ -127,6 +127,10 @@ if __name__ == "__main__":
     df_treasury, df_ff = pull_all_data()
     
     # Create output directory
+    # Pull all data
+    df_treasury, df_ff = pull_all_data()
+    
+    # Create output directory
     filedir = Path(DATA_DIR)
     filedir.mkdir(parents=True, exist_ok=True)
     
