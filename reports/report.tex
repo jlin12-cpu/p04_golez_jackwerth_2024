@@ -22,10 +22,12 @@ Jie Lin and Zimeng Yi\footnote{University of Chicago}
 
 \doublespacing
 \begin{abstract}
-We replicate Figure 1 and Table 1 from \cite{golez2024holding}.
+We replicate Figure 1, Figure 2, and Table 1 from \cite{golez2024holding}.
 Figure 1 plots 12-month maturity interest rates from three sources:
 option-implied rates derived from S\&P 500 index options,
 zero curve rates from OptionMetrics, and constant maturity Treasury rates from FRED.
+Figure 2 plots cumulative wealth indices for a \$1 investment in the dividend strip
+and the market from January 1996 through December 2022.
 Table 1 reports annualized summary statistics for monthly dividend strip returns
 and market returns over the period 1996--2022.
 Following the paper's core methodology, we estimate option-implied interest rates
@@ -34,12 +36,15 @@ and we construct strip prices from put-call parity using these implied rates.
 Our replication of Figure 1 closely matches the paper's findings,
 with an average implied-minus-zero spread of 8.15 basis points
 versus 7 basis points reported in the paper.
+For Figure 2, our replicated market terminal values are reasonably close to the paper
+across all three panels, while strip terminal values are materially higher,
+consistent with the higher mean strip return documented in Table 1.
 For Table 1, our replicated market return statistics are close to the paper,
 while strip return statistics show somewhat larger deviations,
 likely due to differences between our automated CRSP-based dividend construction
 and the paper's Datastream-based implementation.
-We extend both sets of results through 2024 and find that the option-implied rate
-falls below the zero curve rate on average in the post-2022 period.
+We extend all results through 2024 and find that the option-implied rate
+becomes lower than the zero curve rate on average in the post-2022 period.
 For the extended version of Table 1, market return moments remain broadly stable,
 whereas strip return moments become much more extreme in 2023--2024.
 We interpret the latter pattern as likely reflecting increased sensitivity
@@ -67,6 +72,11 @@ and the constant maturity Treasury rate from FRED.
 The paper reports that the option-implied rate is on average 7 basis points
 higher than the zero curve rate over the full sample.
 
+Figure 2 of the paper plots cumulative wealth indices for a \$1 investment
+in the dividend strip and the market from January 1996 through December 2022,
+across three panels corresponding to raw returns, returns in excess of the
+risk-free rate, and returns in excess of duration-matched Treasury bond returns.
+
 Table 1 of the paper reports annualized summary statistics for monthly
 dividend strip returns and market returns, including raw returns,
 returns in excess of the risk-free rate, and returns in excess of
@@ -77,13 +87,13 @@ despite much higher short-horizon return volatility.
 The strong negative autocorrelation of strip returns is interpreted
 as evidence of measurement error in strip prices estimated from options data.
 
-In this replication, we reproduce both Figure 1 and Table 1
+In this replication, we reproduce Figure 1, Figure 2, and Table 1
 using WRDS-accessed OptionMetrics and CRSP data together with
 Treasury rate data from FRED and Kenneth French's data library.
 Because this course project emphasizes an end-to-end reproducible analytical pipeline,
 our implementation follows the paper's core methodology closely
 while adapting certain data inputs to fit a fully automated WRDS-based workflow.
-We then extend both sets of results through 2024.
+We then extend all results through 2024.
 
 \section{Data}
 
@@ -269,6 +279,49 @@ Relative differences are computed relative to the average zero curve rate.
 \label{table:figure1_summary}
 \end{table}
 
+\subsection{Figure 2 Replication}
+
+Figure \ref{fig:figure2} replicates Figure 2 from \cite{golez2024holding},
+plotting cumulative wealth indices for a \$1 investment in the dividend strip
+and the market from January 1996 through December 2022.
+Panel A shows raw cumulative returns, Panel B shows returns in excess of the
+risk-free rate, and Panel C shows returns in excess of duration-matched
+Treasury bond returns.
+
+Our replicated market terminal values are reasonably close to the paper across all three panels.
+In Panel A, \$1 invested in the market grows to \$9.09 in our replication
+versus \$9.97 in the paper.
+In Panel C, the market terminal value is \$3.14 versus \$3.45 in the paper.
+Strip terminal values are materially higher in our replication
+(Panel A: \$12.35 versus \$6.76), consistent with the higher mean strip return
+documented in Table 1 and attributable to the same differences between our
+automated CRSP/OptionMetrics-based implementation and the paper's
+Datastream/CBOE-based construction.
+The overall time-series patterns are qualitatively similar to the published figure,
+especially on the market side, including the sharp drawdown around the 2008 financial crisis
+and the sustained recovery thereafter.
+
+\begin{figure}[h]
+\centering
+\caption{Cumulative Returns (1996--2022)}
+\includegraphics[width=0.95\linewidth]{\PathToOutput/figure2/figure2.png}
+\caption*{
+This figure replicates Figure 2 from \cite{golez2024holding} and plots
+cumulative wealth indices for a \$1 investment in the dividend strip and the market
+from January 1996 through December 2022.
+Panel A shows raw cumulative returns.
+Panel B shows cumulative returns in excess of the 1-month T-bill rate.
+Panel C shows cumulative returns in excess of duration-matched Treasury bond returns
+(2-year for the strip, 10-year for the market).
+Strip returns are estimated from S\&P 500 index options using our automated
+OptionMetrics-based pipeline. The market closely tracks the published figure,
+while strip terminal values are higher due to differences between our
+automated CRSP/OptionMetrics-based implementation and the paper's
+Datastream/CBOE-based construction.
+}
+\label{fig:figure2}
+\end{figure}
+
 \subsection{Table 1 Replication}
 
 Table 1 replicates Table 1 from \cite{golez2024holding},
@@ -301,7 +354,7 @@ Figure \ref{fig:figure1_extension} extends the sample through 2024.
 The red dashed vertical line marks the end of the original paper's sample period
 in December 2022.
 
-In the extended period, the option-implied rate falls below the zero curve rate on average.
+In the extended period, the option-implied rate becomes lower than the zero curve rate on average.
 Our summary statistics show that the average implied-minus-zero spread is negative
 over 2023--2024.
 This pattern differs from the original sample and suggests that the relationship
@@ -333,6 +386,41 @@ after the end of the original paper's sample.
 \label{table:figure1_extension_summary}
 \end{table}
 
+\subsubsection{Figure 2 Extension}
+
+Figure \ref{fig:figure2_extended_winsorized} extends Figure 2 through 2024.
+Extending the sample using the fully automated pipeline produces implausibly
+large cumulative strip returns, driven by several extreme post-2022 monthly
+strip returns.
+Diagnostic checks suggest that this instability is driven by large jumps
+in the estimated strip-price series, likely reflecting put-call parity violations
+or other quote-quality issues in OptionMetrics end-of-day data for long-dated options
+after 2022, rather than by the plotting logic itself.
+As a robustness check, we winsorize post-2022 strip log returns at $\pm 0.50$.
+This materially reduces the explosive late-sample behavior, although the strip
+still substantially outperforms the market in the extended sample, suggesting
+that late-sample strip estimates remain unstable and should be interpreted
+with caution.
+For readability, we report the winsorized robustness version in the main text,
+since the raw extended strip series is dominated by a small number of extreme late-sample observations.
+
+\begin{figure}[h]
+\centering
+\caption{Cumulative Returns (1996--2024, Extended Sample, Winsorized)}
+\includegraphics[width=0.95\linewidth]{\PathToOutput/figure2_extended_winsorized/figure2_extended_winsorized.png}
+\caption*{
+This figure extends the Figure 2 replication through 2024.
+Post-2022 strip log returns are winsorized at $\pm 0.50$ to limit
+the influence of extreme observations that likely reflect put-call parity violations
+or other quote-quality issues in OptionMetrics end-of-day data for long-dated options.
+The market series is unaffected by this adjustment.
+The strip still substantially outperforms the market in the extended sample,
+but these results should be interpreted with caution given the data quality
+limitations documented in the text.
+}
+\label{fig:figure2_extended_winsorized}
+\end{figure}
+
 \subsubsection{Table 1 Extension}
 
 The extended version of Table 1 shows that market return statistics remain broadly stable
@@ -353,11 +441,16 @@ We therefore view the extended strip results as exploratory rather than fully st
 
 \section{Conclusion}
 
-We replicate Figure 1 and Table 1 from \cite{golez2024holding}
+We replicate Figure 1, Figure 2, and Table 1 from \cite{golez2024holding}
 using OptionMetrics end-of-day data together with CRSP and FRED data.
 Our Figure 1 results are numerically close to the published values,
 with remaining differences likely attributable to differences between
 our end-of-day data construction and the paper's intraday CBOE-based implementation.
+
+Figure 2 cumulative return patterns are qualitatively consistent with the paper,
+with market terminal values closely matching the published figure across all three panels.
+Strip terminal values are higher in our replication, consistent with the
+higher mean strip return in Table 1 and attributable to the same data source difference.
 
 For Table 1, our market return statistics are close to the paper,
 while strip return statistics show somewhat larger deviations.
@@ -367,13 +460,15 @@ while maintaining a Sharpe ratio close to that of the market.
 In particular, our replicated strip Sharpe ratio in excess of the risk-free rate
 is 0.18, compared with 0.16 in the paper.
 
-The extension through 2024 shows that the option-implied rate falls below
+The extension through 2024 shows that the option-implied rate becomes lower than
 the zero curve rate on average in the post-2022 period,
 while the strip-return extension becomes much less stable.
 Market return moments remain broadly similar in the extended sample,
 but strip return moments are heavily influenced by several extreme observations
 in 2023--2024.
-We therefore interpret the extended strip results with caution.
+A winsorized robustness check confirms that the explosive late-sample strip behavior
+is driven largely by a small number of extreme monthly observations, although the
+extended strip series remains considerably less stable than the market series.
 Overall, the extension suggests that the paper's interest-rate finding may not be stable
 in recent years, while the extension of strip returns is more sensitive
 to the practical details of options-based strip construction.
