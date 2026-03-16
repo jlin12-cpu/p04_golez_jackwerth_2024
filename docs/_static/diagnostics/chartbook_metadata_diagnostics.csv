@@ -1,0 +1,27 @@
+Name,Metadata Complete,Object Type,Identifier,Pipeline,Missing Fields,Page Link
+Holding Period Effects in Dividend Strip Returns,False,pipeline,P04,P04,"build_commands, os_compatibility, git_repo_URL",../index.html
+crsp_sp500_daily,False,dataframe,crsp_sp500_daily,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/crsp_sp500_daily.html
+crsp_treasury_returns,False,dataframe,crsp_treasury_returns,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/crsp_treasury_returns.html
+fred_treasury_rates,False,dataframe,fred_treasury_rates,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/fred_treasury_rates.html
+fama_french_factors,False,dataframe,fama_french_factors,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/fama_french_factors.html
+fama_french_monthly,False,dataframe,fama_french_monthly,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/fama_french_monthly.html
+optionmetrics_spx_raw,False,dataframe,optionmetrics_spx_raw,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/optionmetrics_spx_raw.html
+optionmetrics_spx_monthly,False,dataframe,optionmetrics_spx_monthly,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/optionmetrics_spx_monthly.html
+optionmetrics_zero_curve,False,dataframe,optionmetrics_zero_curve,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/optionmetrics_zero_curve.html
+clean_options,False,dataframe,clean_options,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/clean_options.html
+clean_zero_curve,False,dataframe,clean_zero_curve,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/clean_zero_curve.html
+clean_rates,False,dataframe,clean_rates,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/clean_rates.html
+clean_crsp_sp500_monthly,False,dataframe,clean_crsp_sp500_monthly,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/clean_crsp_sp500_monthly.html
+implied_rates,False,dataframe,implied_rates,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/implied_rates.html
+implied_rates_1y,False,dataframe,implied_rates_1y,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/implied_rates_1y.html
+zero_curve_1y,False,dataframe,zero_curve_1y,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/zero_curve_1y.html
+strip_prices,False,dataframe,strip_prices,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/strip_prices.html
+all_strip_prices,False,dataframe,all_strip_prices,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/all_strip_prices.html
+monthly_returns,False,dataframe,monthly_returns,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/monthly_returns.html
+Figure 1: 12-Month Interest Rates,False,chart,figure1,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure1.html
+Figure 1 Extension,False,chart,figure1_extension,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure1_extension.html
+Figure 2: Cumulative Returns,False,chart,figure2,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure2.html
+Figure 2 Extension,False,chart,figure2_extension,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure2_extension.html
+Figure 2 Extension (Winsorized),False,chart,figure2_extension_winsorized,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure2_extension_winsorized.html
+Figure 3: Volatility Across Holding Periods,False,chart,figure3,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure3.html
+Figure 3 Extension,False,chart,figure3_extension,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure3_extension.html

@@ -1,0 +1,969 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Holding Period Effects in Dividend Strip Returns &#8212; Holding Period Effects in Dividend Strip Returns</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=206a6f58" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=b9472d72"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chart List" href="charts.html" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>   
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Holding Period Effects in Dividend Strip Returns - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Holding Period Effects in Dividend Strip Returns - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1 current active">
+                <a class="reference internal" href="#">
+                    Holding Period Effects in Dividend Strip Returns
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Pipeline Charts 📈</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="charts.html">Chart List</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Pipeline Dataframes 📊</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/all_strip_prices.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:all_strip_prices</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/clean_crsp_sp500_monthly.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:clean_crsp_sp500_monthly</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/clean_options.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:clean_options</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/clean_rates.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:clean_rates</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/clean_zero_curve.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:clean_zero_curve</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/crsp_sp500_daily.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:crsp_sp500_daily</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/crsp_treasury_returns.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:crsp_treasury_returns</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/fama_french_factors.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:fama_french_factors</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/fama_french_monthly.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:fama_french_monthly</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/fred_treasury_rates.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:fred_treasury_rates</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/implied_rates.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:implied_rates</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/implied_rates_1y.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:implied_rates_1y</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/monthly_returns.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:monthly_returns</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/optionmetrics_spx_monthly.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:optionmetrics_spx_monthly</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/optionmetrics_spx_raw.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:optionmetrics_spx_raw</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/optionmetrics_zero_curve.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:optionmetrics_zero_curve</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/strip_prices.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:strip_prices</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/zero_curve_1y.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:zero_curve_1y</span></code> -</a></li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="sidebar-primary-item">
+<div class="ablog-sidebar-item ablog__category">
+  <h3>
+    <a href="charts/index/category.html">Categories</a>
+  </h3>
+  <ul>
+     
+    <li>
+      <a href="charts/index/category/null.html">null (7)</a>
+    </li>
+     
+  </ul>
+</div>
+</div>
+        <div class="sidebar-primary-item">
+<div class="ablog-sidebar-item ablog__tags">
+  <link
+    rel="stylesheet"
+    href="_static/ablog/tagcloud.css"
+    type="text/css"
+  />
+  <h3><a href="charts/index/tag.html">Tags</a></h3>
+  <ul class="ablog-cloud">
+     
+    <li class="ablog-cloud ablog-cloud-1">
+      <a href="charts/index/tag/derived-from-implied_rates.html">Derived from implied_rates</a>
+    </li>
+      
+    <li class="ablog-cloud ablog-cloud-5">
+      <a href="charts/index/tag/derived-from-strip_prices.html">Derived from strip_prices</a>
+    </li>
+      
+    <li class="ablog-cloud ablog-cloud-5">
+      <a href="charts/index/tag/all_strip_prices.html">all_strip_prices</a>
+    </li>
+      
+    <li class="ablog-cloud ablog-cloud-5">
+      <a href="charts/index/tag/and-crsp_treasury_returns.html">and crsp_treasury_returns</a>
+    </li>
+      
+    <li class="ablog-cloud ablog-cloud-5">
+      <a href="charts/index/tag/clean_crsp_sp500_monthly.html">clean_crsp_sp500_monthly</a>
+    </li>
+      
+    <li class="ablog-cloud ablog-cloud-5">
+      <a href="charts/index/tag/fama_french_monthly.html">fama_french_monthly</a>
+    </li>
+     
+  </ul>
+</div>
+</div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/index.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Holding Period Effects in Dividend Strip Returns</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">Table of Contents</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipeline-specs">Pipeline Specs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-this-project">About this project</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#team-responsibilities">Team responsibilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jie-lin">Jie Lin</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zimeng-yi">Zimeng Yi</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#replication-goals">Replication goals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick start</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-latex">1. Install LaTeX</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-and-activate-a-virtual-environment">2. Create and activate a virtual environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-dependencies">3. Install dependencies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-env-file">4. Create a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-full-pipeline">5. Run the full pipeline</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#list-available-tasks">6. List available tasks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#main-pydoit-tasks">Main PyDoit tasks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-sources">Data sources</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#directory-structure">Directory structure</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-data-is-not-tracked-in-git">Why <code class="docutils literal notranslate"><span class="pre">_data/</span></code> is not tracked in Git</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#naming-conventions">Naming conventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-tour">Notebook tour</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unit-tests">Unit tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-environment-variables">Setting environment variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-formatting">Code formatting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes-on-data-limitations">Notes on data limitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#repository-hygiene">Repository hygiene</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                   <section class="tex2jax_ignore mathjax_ignore" id="holding-period-effects-in-dividend-strip-returns">
+<h1>Holding Period Effects in Dividend Strip Returns<a class="headerlink" href="#holding-period-effects-in-dividend-strip-returns" title="Link to this heading">#</a></h1>
+<p>Last updated: Mar 15, 2026, 10:51:44 PM</p>
+<section id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Pipeline Charts 📈</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="charts.html">Chart List</a></li>
+</ul>
+</div>
+<ul class="postlist-style-none postlist simple">
+<li class="ablog-post"><p class="ablog-post-title"><a class="reference internal" href="charts/P04.figure3.html">Chart: Figure 3: Volatility Across Holding Periods</a></p></li>
+<li class="ablog-post"><p class="ablog-post-title"><a class="reference internal" href="charts/P04.figure3_extension.html">Chart: Figure 3 Extension</a></p></li>
+<li class="ablog-post"><p class="ablog-post-title"><a class="reference internal" href="charts/P04.figure2.html">Chart: Figure 2: Cumulative Returns</a></p></li>
+<li class="ablog-post"><p class="ablog-post-title"><a class="reference internal" href="charts/P04.figure2_extension_winsorized.html">Chart: Figure 2 Extension (Winsorized)</a></p></li>
+<li class="ablog-post"><p class="ablog-post-title"><a class="reference internal" href="charts/P04.figure2_extension.html">Chart: Figure 2 Extension</a></p></li>
+<li class="ablog-post"><p class="ablog-post-title"><a class="reference internal" href="charts/P04.figure1.html">Chart: Figure 1: 12-Month Interest Rates</a></p></li>
+<li class="ablog-post"><p class="ablog-post-title"><a class="reference internal" href="charts/P04.figure1_extension.html">Chart: Figure 1 Extension</a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Pipeline Dataframes 📊</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/all_strip_prices.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:all_strip_prices</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/clean_crsp_sp500_monthly.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:clean_crsp_sp500_monthly</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/clean_options.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:clean_options</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/clean_rates.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:clean_rates</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/clean_zero_curve.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:clean_zero_curve</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/crsp_sp500_daily.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:crsp_sp500_daily</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/crsp_treasury_returns.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:crsp_treasury_returns</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/fama_french_factors.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:fama_french_factors</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/fama_french_monthly.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:fama_french_monthly</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/fred_treasury_rates.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:fred_treasury_rates</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/implied_rates.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:implied_rates</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/implied_rates_1y.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:implied_rates_1y</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/monthly_returns.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:monthly_returns</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/optionmetrics_spx_monthly.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:optionmetrics_spx_monthly</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/optionmetrics_spx_raw.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:optionmetrics_spx_raw</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/optionmetrics_zero_curve.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:optionmetrics_zero_curve</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/strip_prices.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:strip_prices</span></code> -</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataframes/P04/zero_curve_1y.html">Dataframe: <code class="docutils literal notranslate"><span class="pre">P04:zero_curve_1y</span></code> -</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="pipeline-specs">
+<h2>Pipeline Specs<a class="headerlink" href="#pipeline-specs" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Pipeline Name</p></th>
+<th class="head"><p>Holding Period Effects in Dividend Strip Returns</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pipeline ID</p></td>
+<td><p><a class="reference internal" href="#"><span class="std std-doc">P04</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Lead Pipeline Developer</p></td>
+<td><p>Jie Lin and Zimeng Yi</p></td>
+</tr>
+<tr class="row-even"><td><p>Contributors</p></td>
+<td><p>Jie Lin, Zimeng Yi</p></td>
+</tr>
+<tr class="row-odd"><td><p>Git Repo URL</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>Pipeline Web Page</p></td>
+<td><p><a href="file:///Users/jielin/Desktop/full_stack/p04_golez_jackwerth_2024/docs/index.html">Pipeline Web Page</p></td>
+</tr>
+<tr class="row-odd"><td><p>Date of Last Code Update</p></td>
+<td><p>2026-03-15 22:48:10</p></td>
+</tr>
+<tr class="row-even"><td><p>OS Compatibility</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>Linked Dataframes</p></td>
+<td><p><a class="reference internal" href="dataframes/P04/crsp_sp500_daily.html"><span class="std std-doc">P04:crsp_sp500_daily</span></a><br>  <a class="reference internal" href="dataframes/P04/crsp_treasury_returns.html"><span class="std std-doc">P04:crsp_treasury_returns</span></a><br>  <a class="reference internal" href="dataframes/P04/fred_treasury_rates.html"><span class="std std-doc">P04:fred_treasury_rates</span></a><br>  <a class="reference internal" href="dataframes/P04/fama_french_factors.html"><span class="std std-doc">P04:fama_french_factors</span></a><br>  <a class="reference internal" href="dataframes/P04/fama_french_monthly.html"><span class="std std-doc">P04:fama_french_monthly</span></a><br>  <a class="reference internal" href="dataframes/P04/optionmetrics_spx_raw.html"><span class="std std-doc">P04:optionmetrics_spx_raw</span></a><br>  <a class="reference internal" href="dataframes/P04/optionmetrics_spx_monthly.html"><span class="std std-doc">P04:optionmetrics_spx_monthly</span></a><br>  <a class="reference internal" href="dataframes/P04/optionmetrics_zero_curve.html"><span class="std std-doc">P04:optionmetrics_zero_curve</span></a><br>  <a class="reference internal" href="dataframes/P04/clean_options.html"><span class="std std-doc">P04:clean_options</span></a><br>  <a class="reference internal" href="dataframes/P04/clean_zero_curve.html"><span class="std std-doc">P04:clean_zero_curve</span></a><br>  <a class="reference internal" href="dataframes/P04/clean_rates.html"><span class="std std-doc">P04:clean_rates</span></a><br>  <a class="reference internal" href="dataframes/P04/clean_crsp_sp500_monthly.html"><span class="std std-doc">P04:clean_crsp_sp500_monthly</span></a><br>  <a class="reference internal" href="dataframes/P04/implied_rates.html"><span class="std std-doc">P04:implied_rates</span></a><br>  <a class="reference internal" href="dataframes/P04/implied_rates_1y.html"><span class="std std-doc">P04:implied_rates_1y</span></a><br>  <a class="reference internal" href="dataframes/P04/zero_curve_1y.html"><span class="std std-doc">P04:zero_curve_1y</span></a><br>  <a class="reference internal" href="dataframes/P04/strip_prices.html"><span class="std std-doc">P04:strip_prices</span></a><br>  <a class="reference internal" href="dataframes/P04/all_strip_prices.html"><span class="std std-doc">P04:all_strip_prices</span></a><br>  <a class="reference internal" href="dataframes/P04/monthly_returns.html"><span class="std std-doc">P04:monthly_returns</span></a><br></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="about-this-project">
+<h2>About this project<a class="headerlink" href="#about-this-project" title="Link to this heading">#</a></h2>
+<p>This repository contains our final project for <strong>FINM 32900</strong> at the University of Chicago.</p>
+<p>We replicate key empirical results from:</p>
+<blockquote>
+<div><p>Golez, Benjamin, and Jens Jackwerth.<br />
+<em>Holding Period Effects in Dividend Strip Returns</em>.<br />
+<em>Review of Financial Studies</em> 37, no. 10 (2024): 3188–3215.</p>
+</div></blockquote>
+<p>Our assigned project is <strong>P04. Holding Period Effects in Dividend Strip Returns</strong>.</p>
+<p>Using an end-to-end reproducible analytical pipeline, we replicate and extend the following objects from the paper:</p>
+<ul class="simple">
+<li><p><strong>Figure 1</strong>: 12-month interest rates</p></li>
+<li><p><strong>Figure 2</strong>: cumulative returns</p></li>
+<li><p><strong>Figure 3</strong>: annualized volatility across holding periods</p></li>
+<li><p><strong>Table 1</strong>: monthly return summary statistics</p></li>
+</ul>
+<p>We also extend these results through the most recent available sample in our pipeline (through <strong>2024</strong>).</p>
+<p>This project is formatted using the <strong>cookiecutter chartbook template</strong> and automated using <strong>PyDoit</strong>.</p>
+</section>
+<hr class="docutils" />
+<section id="team-responsibilities">
+<h2>Team responsibilities<a class="headerlink" href="#team-responsibilities" title="Link to this heading">#</a></h2>
+<p>Both group members contributed to understanding the paper, designing the pipeline, validating results, and preparing the final report. Primary responsibilities were divided as follows.</p>
+<section id="jie-lin">
+<h3>Jie Lin<a class="headerlink" href="#jie-lin" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Built and tested major parts of the automated data and calculation pipeline</p></li>
+<li><p>Worked on strip return construction and diagnostics</p></li>
+<li><p>Implemented Figure 2 replication and extensions</p></li>
+<li><p>Implemented Figure 3 replication and extensions</p></li>
+<li><p>Integrated figures and tables into the LaTeX report</p></li>
+<li><p>Helped test end-to-end reproducibility with PyDoit</p></li>
+</ul>
+</section>
+<section id="zimeng-yi">
+<h3>Zimeng Yi<a class="headerlink" href="#zimeng-yi" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Worked on Figure 1 replication and extensions</p></li>
+<li><p>Worked on Table 1 replication and extensions</p></li>
+<li><p>Helped validate intermediate outputs and summary statistics</p></li>
+<li><p>Contributed to the report writeup and empirical interpretation</p></li>
+<li><p>Assisted with GitHub workflow, project organization, and debugging</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="replication-goals">
+<h2>Replication goals<a class="headerlink" href="#replication-goals" title="Link to this heading">#</a></h2>
+<p>The paper studies dividend strip prices inferred from S&amp;P 500 index options and emphasizes the importance of using <strong>option-implied interest rates</strong> rather than exogenous zero-curve rates. Our project reproduces the paper’s main empirical objects and then re-runs the same calculations on an updated sample.</p>
+<p>Our replication pipeline performs the following steps:</p>
+<ol class="arabic simple">
+<li><p>Pull raw data from WRDS, FRED, and the Fama-French Data Library</p></li>
+<li><p>Clean the raw data into tidy intermediate datasets</p></li>
+<li><p>Estimate option-implied interest rates</p></li>
+<li><p>Construct dividend strip prices using put-call parity</p></li>
+<li><p>Build monthly strip and market return panels</p></li>
+<li><p>Generate final figures, tables, and the LaTeX report</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
+<section id="install-latex">
+<h3>1. Install LaTeX<a class="headerlink" href="#install-latex" title="Link to this heading">#</a></h3>
+<p>You must have <strong>TeX Live</strong> (or another LaTeX distribution) installed and available in your path.</p>
+<p>Installers:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://tug.org/texlive/windows.html#install">Windows</a></p></li>
+<li><p><a class="reference external" href="https://tug.org/mactex/mactex-download.html">Mac</a></p></li>
+</ul>
+</section>
+<section id="create-and-activate-a-virtual-environment">
+<h3>2. Create and activate a virtual environment<a class="headerlink" href="#create-and-activate-a-virtual-environment" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">      </span><span class="c1"># On Windows: .venv\Scripts\activate</span>
+</pre></div>
+</div>
+</section>
+<section id="install-dependencies">
+<h3>3. Install dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+</section>
+<section id="create-a-env-file">
+<h3>4. Create a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file<a class="headerlink" href="#create-a-env-file" title="Link to this heading">#</a></h3>
+<p>Copy <code class="docutils literal notranslate"><span class="pre">.env.example</span></code> into a new file called <code class="docutils literal notranslate"><span class="pre">.env</span></code> in the project root:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+</pre></div>
+</div>
+<p>Then edit <code class="docutils literal notranslate"><span class="pre">.env</span></code> with your own settings. A typical file looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WRDS_USERNAME</span><span class="o">=</span><span class="n">your_wrds_username</span>
+<span class="n">START_DATE</span><span class="o">=</span><span class="mi">1996</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span>
+<span class="n">END_DATE</span><span class="o">=</span><span class="mi">2025</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">31</span>
+</pre></div>
+</div>
+</section>
+<section id="run-the-full-pipeline">
+<h3>5. Run the full pipeline<a class="headerlink" href="#run-the-full-pipeline" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>doit<span class="w"> </span>all
+</pre></div>
+</div>
+<p>This executes the project end-to-end: raw data pulls → cleaning → intermediate calculations → figure and table generation.</p>
+</section>
+<section id="list-available-tasks">
+<h3>6. List available tasks<a class="headerlink" href="#list-available-tasks" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>doit<span class="w"> </span>list
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="main-pydoit-tasks">
+<h2>Main PyDoit tasks<a class="headerlink" href="#main-pydoit-tasks" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pull_crsp_spindx</span></code></p></td>
+<td><p>Pull daily S&amp;P 500 index data from CRSP</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pull_crsp_treasuries</span></code></p></td>
+<td><p>Pull monthly Treasury returns from CRSP</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pull_fred</span></code></p></td>
+<td><p>Pull Treasury rates and Fama-French factors</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pull_optionmetrics</span></code></p></td>
+<td><p>Pull SPX options and zero curve from OptionMetrics</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">clean</span></code></p></td>
+<td><p>Clean and standardize all raw data</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">calc_implied_rates</span></code></p></td>
+<td><p>Estimate option-implied interest rates</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">calc_strip_prices</span></code></p></td>
+<td><p>Construct dividend strip prices</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">calc_returns</span></code></p></td>
+<td><p>Build monthly return panel</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">plot_figure1</span></code></p></td>
+<td><p>Replicate Figure 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plot_figure1_extension</span></code></p></td>
+<td><p>Extend Figure 1 through 2024</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">figure2</span></code></p></td>
+<td><p>Replicate Figure 2</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">figure2_extended</span></code></p></td>
+<td><p>Extend Figure 2 through 2024</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">figure2_extended_winsorized</span></code></p></td>
+<td><p>Robustness version of extended Figure 2</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">figure3</span></code></p></td>
+<td><p>Replicate Figure 3</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">figure3_extended</span></code></p></td>
+<td><p>Extend Figure 3 through 2024</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">table1</span></code></p></td>
+<td><p>Replicate Table 1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">table1_extended</span></code></p></td>
+<td><p>Extend Table 1 through 2024</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">all</span></code></p></td>
+<td><p>Run the full pipeline end-to-end</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="data-sources">
+<h2>Data sources<a class="headerlink" href="#data-sources" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Source</p></th>
+<th class="head"><p>Content</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>OptionMetrics via WRDS</p></td>
+<td><p>European SPX options; zero-coupon curve</p></td>
+</tr>
+<tr class="row-odd"><td><p>CRSP via WRDS</p></td>
+<td><p>Daily S&amp;P 500 index data; monthly Treasury bond returns</p></td>
+</tr>
+<tr class="row-even"><td><p>FRED</p></td>
+<td><p>Treasury constant maturity rates</p></td>
+</tr>
+<tr class="row-odd"><td><p>Kenneth French Data Library</p></td>
+<td><p>Daily and monthly Fama-French factors; 1-month risk-free rate</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="directory-structure">
+<h2>Directory structure<a class="headerlink" href="#directory-structure" title="Link to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">/</span>                  <span class="n">Python</span> <span class="n">scripts</span> <span class="k">for</span> <span class="n">pulling</span><span class="p">,</span> <span class="n">cleaning</span><span class="p">,</span> <span class="n">calculating</span><span class="p">,</span> <span class="ow">and</span> <span class="n">plotting</span>
+<span class="n">_data</span><span class="o">/</span>                <span class="n">Raw</span><span class="p">,</span> <span class="n">cleaned</span><span class="p">,</span> <span class="ow">and</span> <span class="n">intermediate</span> <span class="n">parquet</span> <span class="n">files</span> <span class="p">(</span><span class="ow">not</span> <span class="n">tracked</span> <span class="ow">in</span> <span class="n">Git</span><span class="p">)</span>
+<span class="n">_data</span><span class="o">/</span><span class="n">calc</span><span class="o">/</span>           <span class="n">Derived</span> <span class="n">datasets</span> <span class="p">(</span><span class="n">implied</span> <span class="n">rates</span><span class="p">,</span> <span class="n">strip</span> <span class="n">prices</span><span class="p">,</span> <span class="n">monthly</span> <span class="n">returns</span><span class="p">)</span>
+<span class="n">output</span><span class="o">/</span>               <span class="n">Generated</span> <span class="n">figures</span> <span class="ow">and</span> <span class="n">tables</span>
+<span class="n">reports</span><span class="o">/</span>              <span class="n">LaTeX</span> <span class="n">report</span> <span class="n">source</span> <span class="n">files</span>
+<span class="n">assets</span><span class="o">/</span>               <span class="n">Static</span> <span class="n">files</span> <span class="ow">not</span> <span class="n">generated</span> <span class="n">automatically</span>
+</pre></div>
+</div>
+<section id="why-data-is-not-tracked-in-git">
+<h3>Why <code class="docutils literal notranslate"><span class="pre">_data/</span></code> is not tracked in Git<a class="headerlink" href="#why-data-is-not-tracked-in-git" title="Link to this heading">#</a></h3>
+<p>Most files in <code class="docutils literal notranslate"><span class="pre">_data/</span></code> are either automatically reproducible by rerunning the pipeline, or they come from licensed academic databases (WRDS) and cannot be redistributed.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="naming-conventions">
+<h2>Naming conventions<a class="headerlink" href="#naming-conventions" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Prefix</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pull_*.py</span></code></p></td>
+<td><p>Pull raw data from an external source</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">clean_*.py</span></code></p></td>
+<td><p>Clean and standardize raw data</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">calc_*.py</span></code></p></td>
+<td><p>Compute derived datasets</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">figure*.py</span></code> / <code class="docutils literal notranslate"><span class="pre">table*.py</span></code> / <code class="docutils literal notranslate"><span class="pre">plot_*.py</span></code></p></td>
+<td><p>Generate final output figures and tables</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="notebook-tour">
+<h2>Notebook tour<a class="headerlink" href="#notebook-tour" title="Link to this heading">#</a></h2>
+<p>The project includes notebooks that provide a tour of the cleaned data and selected parts of the analysis logic. These notebooks help the reader understand the structure of the data, how the paper’s methodology is implemented, and how key replication objects were validated before scripting.</p>
+<p>The final official outputs are generated by the Python scripts and the PyDoit pipeline, not by manual notebook execution.</p>
+</section>
+<hr class="docutils" />
+<section id="unit-tests">
+<h2>Unit tests<a class="headerlink" href="#unit-tests" title="Link to this heading">#</a></h2>
+<p>This project uses unit tests to validate key intermediate logic and replicated values, including checks on Figure 1 summary statistics, Table 1 values, Figure 2 terminal values, and Figure 3 holding-period volatility values.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w">                    </span><span class="c1"># Run all tests</span>
+pytest<span class="w"> </span>--doctest-modules<span class="w">  </span><span class="c1"># Include doctests</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="setting-environment-variables">
+<h2>Setting environment variables<a class="headerlink" href="#setting-environment-variables" title="Link to this heading">#</a></h2>
+<p>If you want to export your <code class="docutils literal notranslate"><span class="pre">.env</span></code> variables into your shell session:</p>
+<p><strong>Linux / Mac:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="w"> </span>-a
+<span class="nb">source</span><span class="w"> </span>.env
+<span class="nb">set</span><span class="w"> </span>+a
+</pre></div>
+</div>
+<p><strong>Windows (PowerShell):</strong></p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nb">Get-Content</span> <span class="p">.</span><span class="n">env</span> <span class="p">|</span> <span class="k">ForEach</span><span class="n">-Object</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$_</span> <span class="o">-match</span> <span class="s1">&#39;^([^=]+)=(.*)$&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="no">[Environment]</span><span class="p">::</span><span class="n">SetEnvironmentVariable</span><span class="p">(</span><span class="nv">$matches</span><span class="p">[</span><span class="n">1</span><span class="p">],</span> <span class="nv">$matches</span><span class="p">[</span><span class="n">2</span><span class="p">],</span> <span class="s1">&#39;Process&#39;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="code-formatting">
+<h2>Code formatting<a class="headerlink" href="#code-formatting" title="Link to this heading">#</a></h2>
+<p>This project uses <a class="reference external" href="https://docs.astral.sh/ruff/">Ruff</a> for linting and formatting:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ruff<span class="w"> </span>check<span class="w"> </span>.<span class="w"> </span>--fix
+ruff<span class="w"> </span>format<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="notes-on-data-limitations">
+<h2>Notes on data limitations<a class="headerlink" href="#notes-on-data-limitations" title="Link to this heading">#</a></h2>
+<p>The original paper uses intraday CBOE data for part of the sample. Our replication uses WRDS-accessed OptionMetrics end-of-day data, which leads to some remaining quantitative differences, especially in strip return statistics:</p>
+<ul class="simple">
+<li><p><strong>Figure 1</strong> is replicated closely</p></li>
+<li><p><strong>Market return results</strong> are generally close to the paper</p></li>
+<li><p><strong>Strip return results</strong> are directionally and qualitatively similar, but can differ more in magnitude</p></li>
+<li><p><strong>Post-2022 strip extensions</strong> become less stable and should be interpreted cautiously</p></li>
+</ul>
+<p>These issues are discussed in detail in the report.</p>
+</section>
+<hr class="docutils" />
+<section id="repository-hygiene">
+<h2>Repository hygiene<a class="headerlink" href="#repository-hygiene" title="Link to this heading">#</a></h2>
+<p>This repository does not contain:</p>
+<ul class="simple">
+<li><p>Copyrighted raw data</p></li>
+<li><p>API keys or private credentials</p></li>
+<li><p>Committed <code class="docutils literal notranslate"><span class="pre">.env</span></code> files</p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">.env.example</span></code> as the template for your local <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p>
+</section>
+</section>
+
+<div class="section ablog__blog_comments">
+   
+</div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="charts.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chart List</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">Table of Contents</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipeline-specs">Pipeline Specs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-this-project">About this project</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#team-responsibilities">Team responsibilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jie-lin">Jie Lin</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zimeng-yi">Zimeng Yi</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#replication-goals">Replication goals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick start</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-latex">1. Install LaTeX</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-and-activate-a-virtual-environment">2. Create and activate a virtual environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-dependencies">3. Install dependencies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-env-file">4. Create a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-full-pipeline">5. Run the full pipeline</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#list-available-tasks">6. List available tasks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#main-pydoit-tasks">Main PyDoit tasks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-sources">Data sources</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#directory-structure">Directory structure</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-data-is-not-tracked-in-git">Why <code class="docutils literal notranslate"><span class="pre">_data/</span></code> is not tracked in Git</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#naming-conventions">Naming conventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-tour">Notebook tour</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unit-tests">Unit tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-environment-variables">Setting environment variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-formatting">Code formatting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes-on-data-limitations">Notes on data limitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#repository-hygiene">Repository hygiene</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jie Lin and Zimeng Yi
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Jie Lin and Zimeng Yi.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
