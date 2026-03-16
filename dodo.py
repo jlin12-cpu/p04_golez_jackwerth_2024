@@ -476,16 +476,70 @@ def task_compile_report():
 
 
 # =============================================================================
-# Layer 6: Website — build chartbook site
+# Layer 6: Website — generate HTML pages for chartbook
 # =============================================================================
+
+def task_generate_chartbook_html():
+    """Generate self-contained HTML pages for figures and tables for the chartbook website."""
+    return {
+        "actions": [f'"{PYTHON}" {SRC / "generate_chartbook_html.py"}'],
+        "file_dep": [
+            OUT / "figure1/figure1.png",
+            OUT / "figure1/figure1_summary.csv",
+            OUT / "figure1_extension/figure1_extension.png",
+            OUT / "figure1_extension/figure1_extension_summary.csv",
+            OUT / "figure1_summary_stats/figure1_implied_zero_spread.png",
+            OUT / "figure1_summary_stats/figure1_summary_stats_table.csv",
+            OUT / "figure2/figure2.png",
+            OUT / "figure2/figure2_terminal_comparison.csv",
+            OUT / "figure2_extended/figure2_extended.png",
+            OUT / "figure2_extended/figure2_extended_terminal.csv",
+            OUT / "figure2_extended_winsorized/figure2_extended_winsorized.png",
+            OUT / "figure2_extended_winsorized/figure2_extended_winsorized_terminal.csv",
+            OUT / "figure3/figure3.png",
+            OUT / "figure3/figure3_series.csv",
+            OUT / "figure3_extended/figure3_extended.png",
+            OUT / "figure3_extended/figure3_extended_series.csv",
+            OUT / "table1.csv",
+            OUT / "table1_extended.csv",
+        ],
+        "targets": [
+            OUT / "site_html/figure1.html",
+            OUT / "site_html/figure1_extension.html",
+            OUT / "site_html/figure1_summary_stats.html",
+            OUT / "site_html/figure2.html",
+            OUT / "site_html/figure2_extension.html",
+            OUT / "site_html/figure2_extension_winsorized.html",
+            OUT / "site_html/figure3.html",
+            OUT / "site_html/figure3_extension.html",
+            OUT / "site_html/table1.html",
+            OUT / "site_html/table1_extended.html",
+        ],
+        "task_dep": [
+            "plot_figure1",
+            "plot_figure1_summary_stats",
+            "plot_figure1_extension",
+            "figure2",
+            "figure2_extended",
+            "figure2_extended_winsorized",
+            "figure3",
+            "figure3_extended",
+            "table1",
+            "table1_extended",
+        ],
+        "verbosity": 2,
+    }
+
 
 def task_build_chartbook_site():
     """
     Build the chartbook website into docs/.
 
-    Kept separate from task_all() for now, because chartbook.toml may still
-    reference legacy notebook/chart paths. Run this task explicitly while
-    debugging the website:
+    This task is kept separate from task_all() so that the main replication
+    pipeline remains stable even if website styling or chartbook rendering
+    needs additional debugging.
+
+    Run explicitly with:
         doit build_chartbook_site
     """
     return {
@@ -499,9 +553,9 @@ def task_build_chartbook_site():
         "targets": [
             "docs/index.html",
         ],
+        "task_dep": ["generate_chartbook_html"],  # 确保HTML先生成
         "verbosity": 2,
     }
-
 
 # =============================================================================
 # Full pipeline
@@ -525,6 +579,6 @@ def task_all():
             "generate_latex_tables",
             "run_tests",
             "compile_report",
-            # Intentionally NOT including build_chartbook_site yet.
+            "build_chartbook_site", 
         ],
     }

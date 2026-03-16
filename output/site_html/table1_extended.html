@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Table 1 Extension</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+            color: #222;
+            background: #fff;
+        }
+        h1, h2, h3 {
+            color: #111;
+        }
+        h1 {
+            margin-bottom: 0.4rem;
+            line-height: 1.2;
+        }
+        .meta {
+            color: #666;
+            margin-bottom: 1.2rem;
+        }
+        .caption {
+            background: #f7f7f7;
+            border-left: 4px solid #cccccc;
+            padding: 12px 16px;
+            margin: 1rem 0 1.5rem 0;
+        }
+        .img-wrap {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        table.dataframe {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0 2rem 0;
+            font-size: 0.95rem;
+        }
+        table.dataframe th,
+        table.dataframe td {
+            border: 1px solid #d9d9d9;
+            padding: 8px 10px;
+            text-align: right;
+        }
+        table.dataframe th:first-child,
+        table.dataframe td:first-child {
+            text-align: left;
+        }
+        table.dataframe thead th {
+            background-color: #f0f0f0;
+        }
+        .note {
+            color: #444;
+            font-size: 0.95rem;
+        }
+        .missing {
+            padding: 1rem;
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            color: #7a5c00;
+            margin: 1rem 0;
+        }
+        .small {
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
+    
+</head>
+<body>
+  <h1>Table 1 Extension</h1>
+  <div class="meta">Extended sample through the latest available month</div>
+  <div class="caption">Extended-sample version of Table 1 showing that market-side moments remain broadly stable while strip-side moments become much more extreme in 2023-2024.</div>
+  <h2>Extended Table 1</h2>
+<table class="dataframe dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Series</th>
+      <th>Mean</th>
+      <th>Std. dev.</th>
+      <th>Sharpe ratio</th>
+      <th>AR(1)</th>
+      <th>N</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Market</td>
+      <td>9.08\%</td>
+      <td>16.06\%</td>
+      <td>NaN</td>
+      <td>0.03</td>
+      <td>347</td>
+    </tr>
+    <tr>
+      <td>Strip</td>
+      <td>18.29\%</td>
+      <td>66.50\%</td>
+      <td>NaN</td>
+      <td>-0.14</td>
+      <td>347</td>
+    </tr>
+    <tr>
+      <td>Market - rf</td>
+      <td>6.89\%</td>
+      <td>16.07\%</td>
+      <td>0.43</td>
+      <td>0.04</td>
+      <td>347</td>
+    </tr>
+    <tr>
+      <td>Strip - rf</td>
+      <td>16.10\%</td>
+      <td>66.49\%</td>
+      <td>0.24</td>
+      <td>-0.14</td>
+      <td>347</td>
+    </tr>
+    <tr>
+      <td>Market - 10Y</td>
+      <td>5.34\%</td>
+      <td>18.22\%</td>
+      <td>0.29</td>
+      <td>0.10</td>
+      <td>347</td>
+    </tr>
+    <tr>
+      <td>Strip - 2Y</td>
+      <td>15.33\%</td>
+      <td>66.42\%</td>
+      <td>0.23</td>
+      <td>-0.14</td>
+      <td>347</td>
+    </tr>
+  </tbody>
+</table>
+  <h2>Notes</h2>
+  <p class="note">The post-2022 period has a large effect on strip mean and volatility.</p>
+  <p class="note">These extension results are best interpreted as exploratory diagnostics.</p>
+</body>
+</html>

@@ -225,49 +225,56 @@ chart_name = "Figure 1: 12-Month Interest Rates"
 short_description_chart = "Replication of Figure 1 comparing option-implied rates, zero curve rates, and Treasury rates over 1996-2022."
 chart_docs_str = "This figure reproduces the paper's comparison of the option-implied rate, the OptionMetrics zero-curve rate, and the 1-year constant maturity Treasury rate over the paper sample."
 dataframe_id = "implied_rates_1y"
-path_to_html_chart = "output/figure1/figure1.png"
+path_to_html_chart = "output/site_html/figure1.html"
 
 [charts.figure1_extension]
 chart_name = "Figure 1 Extension"
 short_description_chart = "Extension of Figure 1 through 2024."
 chart_docs_str = "This figure extends the Figure 1 analysis through 2024 and is accompanied by diagnostic and robustness outputs for the post-2022 period."
 dataframe_id = "implied_rates_1y"
-path_to_html_chart = "output/figure1_extension/figure1_extension.png"
+path_to_html_chart = "output/site_html/figure1_extension.html"
+
+[charts.figure1_summary_stats]
+chart_name = "Figure 1 Summary Statistics"
+short_description_chart = "Descriptive statistics and implied-zero spread chart for Figure 1."
+chart_docs_str = "Descriptive statistics for the three interest rate series and a time series of the implied-minus-zero spread in basis points."
+dataframe_id = "implied_rates_1y"
+path_to_html_chart = "output/site_html/figure1_summary_stats.html"
 
 [charts.figure2]
 chart_name = "Figure 2: Cumulative Returns"
 short_description_chart = "Replication of Figure 2 showing cumulative strip and market returns over 1996-2022."
 chart_docs_str = "This figure plots cumulative wealth indices for a $1 investment in the strip and in the market under raw, risk-free excess, and Treasury excess definitions."
 dataframe_id = "monthly_returns"
-path_to_html_chart = "output/figure2/figure2.png"
+path_to_html_chart = "output/site_html/figure2.html"
 
 [charts.figure2_extension]
 chart_name = "Figure 2 Extension"
 short_description_chart = "Extension of cumulative strip and market return paths through 2024."
 chart_docs_str = "This figure extends the cumulative-return analysis beyond the paper sample using the automated pipeline's monthly return series."
 dataframe_id = "monthly_returns"
-path_to_html_chart = "output/figure2_extended/figure2_extended.png"
+path_to_html_chart = "output/site_html/figure2_extension.html"
 
 [charts.figure2_extension_winsorized]
 chart_name = "Figure 2 Extension (Winsorized)"
 short_description_chart = "Robustness version of the extended cumulative return figure with post-2022 strip return winsorization."
 chart_docs_str = "This robustness figure caps extreme post-2022 strip returns to reduce the influence of late-sample outliers caused by unstable strip-price estimates."
 dataframe_id = "monthly_returns"
-path_to_html_chart = "output/figure2_extended_winsorized/figure2_extended_winsorized.png"
+path_to_html_chart = "output/site_html/figure2_extension_winsorized.html"
 
 [charts.figure3]
 chart_name = "Figure 3: Volatility Across Holding Periods"
 short_description_chart = "Replication of Figure 3 showing annualized volatility across holding periods from 1 to 36 months."
 chart_docs_str = "This figure shows how annualized volatility changes with holding period for the strip and the market, under both risk-free and Treasury excess return definitions."
 dataframe_id = "monthly_returns"
-path_to_html_chart = "output/figure3/figure3.png"
+path_to_html_chart = "output/site_html/figure3.html"
 
 [charts.figure3_extension]
 chart_name = "Figure 3 Extension"
 short_description_chart = "Extension of the holding-period volatility analysis through 2024."
 chart_docs_str = "This figure extends the Figure 3 analysis through 2024 and highlights the increased instability of strip volatility in the post-2022 sample."
 dataframe_id = "monthly_returns"
-path_to_html_chart = "output/figure3_extended/figure3_extended.png"
+path_to_html_chart = "output/site_html/figure3_extension.html"
 
 # =============================================================================
 # TABLES
@@ -279,10 +286,10 @@ path_to_html_chart = "output/figure3_extended/figure3_extended.png"
 table_name = "Table 1: Monthly Return Summary Statistics"
 short_description_table = "Replication of the paper's main monthly return summary statistics table for 1996-2022."
 table_docs_str = "This table reports annualized means, standard deviations, Sharpe ratios, and autocorrelations for market and strip returns under raw and excess-return definitions."
-path_to_output_table = "output/table1.tex"
+path_to_output_table = "output/site_html/table1.html"
 
 [tables.table1_extended]
 table_name = "Table 1 Extension"
 short_description_table = "Extension of Table 1 through 2024."
 table_docs_str = "This table extends the monthly return summary statistics through 2024 and highlights the instability of late-sample strip return estimates."
-path_to_output_table = "output/table1_extended.tex"
+path_to_output_table = "output/site_html/table1_extended.html"

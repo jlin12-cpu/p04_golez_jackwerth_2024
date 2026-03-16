@@ -20,6 +20,7 @@ all_strip_prices,False,dataframe,all_strip_prices,P04,"dataframe_name, short_des
 monthly_returns,False,dataframe,monthly_returns,P04,"dataframe_name, short_description_df, links_to_data_providers, topic_tags",../dataframes/P04/monthly_returns.html
 Figure 1: 12-Month Interest Rates,False,chart,figure1,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure1.html
 Figure 1 Extension,False,chart,figure1_extension,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure1_extension.html
+Figure 1 Summary Statistics,False,chart,figure1_summary_stats,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure1_summary_stats.html
 Figure 2: Cumulative Returns,False,chart,figure2,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure2.html
 Figure 2 Extension,False,chart,figure2_extension,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure2_extension.html
 Figure 2 Extension (Winsorized),False,chart,figure2_extension_winsorized,P04,"topic_tags, data_frequency, observation_period, lag_in_data_release, data_release_timing, units",../charts/P04.figure2_extension_winsorized.html
