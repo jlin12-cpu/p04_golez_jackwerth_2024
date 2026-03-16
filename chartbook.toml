@@ -21,27 +21,6 @@ git_repo_URL = ""
 README_file_path = "./README.md"
 
 # =============================================================================
-# NOTEBOOKS
-# =============================================================================
-
-[notebooks]
-
-[notebooks.data_exploration]
-notebook_name = "Data Exploration"
-notebook_description = "Exploratory notebook used in the early phase of the project to inspect raw SPX options, CRSP index data, Treasury data, and general data coverage before building the automated replication pipeline."
-notebook_path = "src/SPX_index_options_graph_revised.ipynb"
-
-[notebooks.figure2_diagnostics]
-notebook_name = "Figure 2 Diagnostics"
-notebook_description = "Notebook used to validate cumulative return construction logic and compare replicated Figure 2 series with author-provided benchmark data."
-notebook_path = "src/figure2.ipynb"
-
-[notebooks.figure3_diagnostics]
-notebook_name = "Figure 3 Diagnostics"
-notebook_description = "Notebook used to validate holding-period volatility calculations before finalizing the automated Figure 3 script."
-notebook_path = "src/figure3.ipynb"
-
-# =============================================================================
 # DATAFRAMES — RAW DATA
 # =============================================================================
 
