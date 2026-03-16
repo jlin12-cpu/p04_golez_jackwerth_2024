@@ -6,7 +6,7 @@ chartbook_format_version = "0.0.2"
 title = "Holding Period Effects in Dividend Strip Returns"
 author = "Jie Lin and Zimeng Yi"
 copyright = "2026"
-logo_path = ""
+logo_path = "assets/logo.png"
 favicon_path = ""
 
 [pipeline]
