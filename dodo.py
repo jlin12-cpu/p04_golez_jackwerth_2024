@@ -427,6 +427,30 @@ def task_run_tests():
 # =============================================================================
 # Layer 5: Report — compile PDF
 # =============================================================================
+def task_own_analysis():
+    """Generate own analysis figures and summary statistics table for the report."""
+    return {
+        "actions": [f'"{PYTHON}" {SRC / "own_analysis.py"}'],
+        "file_dep": [
+            DATA / "crsp_sp500_daily.parquet",
+            DATA / "optionmetrics_spx_monthly.parquet",
+            DATA / "optionmetrics_zero_curve.parquet",
+            DATA / "fama_french_monthly.parquet",
+            DATA / "crsp_treasury_returns.parquet",
+        ],
+        "targets": [
+            OUT / "data_summary.tex",
+            OUT / "figure_A_input_series.png",
+            OUT / "figure_B_options_coverage.png",
+        ],
+        "task_dep": [
+            "pull_crsp_spindx",
+            "pull_crsp_treasuries",
+            "pull_fred",
+            "pull_optionmetrics",
+        ],
+        "verbosity": 2,
+    }
 
 def task_compile_report():
     """
@@ -455,6 +479,9 @@ def task_compile_report():
             OUT / "figure2_extended_winsorized/figure2_extended_winsorized.png",
             OUT / "figure3/figure3.png",
             OUT / "figure3_extended/figure3_extended.png",
+            OUT / "data_summary.tex",
+            OUT / "figure_A_input_series.png",
+            OUT / "figure_B_options_coverage.png",
         ],
         "targets": [
             REPORTS / "report.pdf",
@@ -470,6 +497,7 @@ def task_compile_report():
             "table1",
             "table1_extended",
             "generate_latex_tables",
+            "own_analysis"
         ],
         "verbosity": 2,
     }

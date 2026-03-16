@@ -39,13 +39,14 @@ jupyterlab
 jupytext
 notebook
 
-
 # Documentation/notebook rendering dependencies
 chartbook[all]
-
 
 # WRDS data access
 wrds>=3.2.0
 jaydebeapi
 
-
+# Additional dependencies
+tqdm
+python-dateutil
+nbconvert

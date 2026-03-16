@@ -163,7 +163,9 @@ our interpolation to a 1-year constant maturity horizon.
 \begin{table}[h]
 \centering
 \caption{Summary Statistics for Input Data Series}
+\begin{adjustbox}{max width=\textwidth}
 \input{\PathToOutput/data_summary.tex}
+\end{adjustbox}
 \caption*{
 This table reports descriptive statistics for all input data series used in the
 replication. The sample spans January 1996 through December 2024.
@@ -466,17 +468,19 @@ in contrast to the pattern observed during 1996--2022.
 \end{figure}
 
 \begin{table}[h]
-\centering
-\caption{Extension Summary Statistics: Interest Rates}
-\input{\PathToOutput/figure1_extension/figure1_extension_summary.tex}
-\caption*{
-This table reports summary statistics for the original sample, the extended period,
-and the full sample through 2024.
-The extension shows that the implied-minus-zero spread turns negative on average
-after the end of the original paper's sample.
-}
-\label{table:figure1_extension_summary}
-\end{table}
+    \centering
+    \caption{Extension Summary Statistics: Interest Rates}
+    \begin{adjustbox}{max width=\textwidth}
+    \input{\PathToOutput/figure1_extension/figure1_extension_summary.tex}
+    \end{adjustbox}
+    \caption*{
+    This table reports summary statistics for the original sample, the extended period,
+    and the full sample through 2024.
+    The extension shows that the implied-minus-zero spread turns negative on average
+    after the end of the original paper's sample.
+    }
+    \label{table:figure1_extension_summary}
+    \end{table}
 
 \subsubsection{Figure 2 Extension}
 
@@ -531,6 +535,7 @@ interest rate movements, rather than a stable shift in the economics of dividend
 We therefore view the extended strip results as exploratory rather than fully stable.
 
 \input{\PathToOutput/table1_extended.tex}
+\label{table:table1_extended}
 
 \subsubsection{Figure 3 Extension}
 
