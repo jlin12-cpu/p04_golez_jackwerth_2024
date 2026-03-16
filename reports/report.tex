@@ -154,45 +154,72 @@ We obtain the monthly 1-month T-bill rate from Kenneth French's data library.
 
 \section{Data Summary}
 
-Table \ref{table:summary_stats} reports descriptive statistics
-for the three interest rate series across the full sample
-and two sub-periods. The option-implied rate is on average
-slightly higher than the zero curve rate in both sub-periods,
-with a somewhat larger average difference in the second half
-of the sample.
-
-Figure \ref{fig:spread} plots the monthly spread between
-the option-implied rate and the zero curve rate.
-The spread is more volatile in the early sample period
-and becomes more stable after 2010.
+Table~\ref{tab:data_summary} reports descriptive statistics for all input data series
+used in the replication. The sample spans January 1996 through December 2024.
+Notable features include the near-zero mean of the 1-month T-bill rate after 2010,
+and the wide range of SPX option maturities (90--2184 days), which motivates
+our interpolation to a 1-year constant maturity horizon.
 
 \begin{table}[h]
-    \centering
-    \caption{Descriptive Statistics for 12-Month Interest Rate Series}
-    \input{\PathToOutput/figure1_summary_stats/figure1_summary_stats_table.tex}
-    \caption*{
-    This table reports descriptive statistics for the three
-    12-month interest rate series used in Figure 1.
-    Statistics are reported for the full sample (1996--2022)
-    and for two sub-periods. All rates are expressed in percent.
-    }
-    \label{table:summary_stats}
-    \end{table}
+\centering
+\caption{Summary Statistics for Input Data Series}
+\input{\PathToOutput/data_summary.tex}
+\caption*{
+This table reports descriptive statistics for all input data series used in the
+replication. The sample spans January 1996 through December 2024.
+The near-zero mean T-bill rate over the full sample reflects the extended
+low-rate environment of 2010--2021. The wide range of SPX option maturities
+motivates the interpolation to a 1-year constant maturity horizon used in
+Figure 1. The large number of monthly option observations (760,830) reflects
+the richness of the OptionMetrics data and supports reliable put-call parity
+estimation across the full sample.
+}
+\label{tab:data_summary}
+\end{table}
+
+Figure~\ref{fig:input_series} plots the three key input series over time.
+The sharp rate hike cycle beginning in 2022 is clearly visible in Panel~B
+and provides direct motivation for the extension analysis in Section~4.
 
 \begin{figure}[h]
 \centering
-\caption{Implied-Minus-Zero Spread (1996--2022)}
-\includegraphics[width=0.95\linewidth]{\PathToOutput/figure1_summary_stats/figure1_implied_zero_spread.png}
+\caption{Key Input Variables (1996--2024)}
+\includegraphics[width=0.95\linewidth]{\PathToOutput/figure_A_input_series.png}
 \caption*{
-This figure plots the monthly spread between the option-implied
-rate and the zero curve rate in basis points.
-The red dashed line shows the full-sample mean spread.
-The gray dashed vertical line marks the beginning of the
-second half of the sample (January 2010).
-The spread is more volatile in the early sample period
-and is more often positive in the second half of the sample.
+This figure plots three key input series over the full 1996--2024 sample.
+Panel~A shows the S\&P 500 index level, motivating the use of log returns
+in all return calculations.
+Panel~B shows the 1-year zero curve rate alongside the annualised 1-month
+T-bill rate, illustrating the low-rate environment of 2010--2021 and the
+rapid rate hike cycle of 2022--2023 that is the focus of the extension analysis.
+Panel~C shows the number of SPX option contracts available at each month-end date,
+confirming broad data coverage throughout the sample with no structural gaps.
 }
-\label{fig:spread}
+\label{fig:input_series}
+\end{figure}
+
+Figure~\ref{fig:options_coverage} characterizes the SPX options data after filtering.
+The concentration of maturities around 90--400 days and the near-symmetric
+moneyness distribution confirm that the data support reliable put-call parity
+estimation across the full sample.
+
+\begin{figure}[h]
+\centering
+\caption{SPX Options Data Coverage After Filtering}
+\includegraphics[width=0.95\linewidth]{\PathToOutput/figure_B_options_coverage.png}
+\caption*{
+This figure characterizes the SPX options data after applying the filters from
+\cite{golez2024holding}: bid-ask midpoint $\geq$ \$3, days to maturity $\geq$ 90,
+and moneyness $K/S \in [0.5, 1.5]$.
+Panel~A shows that the filtered sample concentrates on maturities of 90--400 days,
+consistent with the paper's focus on 1--2 year dividend strips.
+The vertical dashed lines mark the 1-year and 2-year horizons used in the
+strip price construction.
+Panel~B shows that the moneyness distribution is approximately symmetric
+around 1.0, indicating balanced put and call coverage that is necessary for
+reliable put-call parity estimates across the full sample.
+}
+\label{fig:options_coverage}
 \end{figure}
 
 \section{Methodology}

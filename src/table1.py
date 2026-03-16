@@ -171,13 +171,9 @@ def format_table1(df_table: pd.DataFrame) -> pd.DataFrame:
 
 
 def to_latex(df_fmt: pd.DataFrame) -> str:
-    """
-    Convert formatted Table 1 to LaTeX.
-    """
     latex = df_fmt.to_latex(
         na_rep="",
         caption="Monthly returns (annualized).",
-        label="tab:table1",
         bold_rows=False,
         escape=False,
     )
